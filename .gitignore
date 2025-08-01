@@ -12,6 +12,9 @@ dist/
 # Target
 target/
 
+# DS_Store
+.DS_Store
+
 
 
 # Node
