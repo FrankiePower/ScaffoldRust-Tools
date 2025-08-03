@@ -1,28 +1,57 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+/**
+ * TypeScript Configuration for Frontend Application
+ * 
+ * This configuration is optimized for an Angular frontend application.
+ * It includes both TypeScript compiler options and Angular-specific compiler options.
+ * 
+ * References:
+ * - TypeScript configuration: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+ * - Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options
+ */
 {
+  /**
+   * Prevents automatic compilation on save. Build tools like Angular CLI handle compilation.
+   */
   "compileOnSave": false,
+  
+  /**
+   * TypeScript compiler options that control how the code is compiled.
+   */
   "compilerOptions": {
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "ES2022",
-    "module": "preserve"
+    "strict": true,                           // Enable all strict type checking options
+    "noImplicitOverride": true,              // Ensure overriding methods are explicitly marked with 'override'
+    "noPropertyAccessFromIndexSignature": true, // Require explicit indexing when accessing properties from index signature
+    "noImplicitReturns": true,               // Report error when not all code paths in function return a value
+    "noFallthroughCasesInSwitch": true,      // Report errors for fallthrough cases in switch statements
+    "skipLibCheck": true,                     // Skip type checking of declaration files for better performance
+    "isolatedModules": true,                  // Ensure each file can be safely transpiled without relying on other imports
+    "experimentalDecorators": true,          // Enable experimental support for decorators (required for Angular)
+    "importHelpers": true,                    // Import helper functions from tslib once per project
+    "target": "ES2022",                      // Specify ECMAScript target version
+    "module": "preserve"                      // Preserve the module system used in source files
   },
+  
+  /**
+   * Angular-specific compiler options that control template compilation and type checking.
+   */
   "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "typeCheckHostBindings": true,
-    "strictTemplates": true
+    "enableI18nLegacyMessageIdFormat": false, // Disable legacy message ID format for i18n
+    "strictInjectionParameters": true,        // Verify that the types of parameters passed to an injectable match the types of its constructor parameters
+    "strictInputAccessModifiers": true,       // Respect 'private', 'protected' when matching inputs to properties
+    "typeCheckHostBindings": true,            // Verify host bindings in templates
+    "strictTemplates": true                   // Enable strict template type checking
   },
+  
+  /**
+   * No root files specified here as they are included in the referenced configs.
+   */
   "files": [],
+  
+  /**
+   * References to other TypeScript configuration files.
+   * - tsconfig.app.json: Configuration for the main application
+   * - tsconfig.spec.json: Configuration for tests
+   */
   "references": [
     {
       "path": "./tsconfig.app.json"
