@@ -1,0 +1,44 @@
+name: Angular CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/frontend/**'
+      - '.github/workflows/angular-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'apps/frontend/**'
+      - '.github/workflows/angular-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: 1.2.19
+
+    - name: Install dependencies with Bun
+      working-directory: ./apps/frontend
+      run: bun install
+
+    - name: Build Angular App
+      working-directory: ./apps/frontend
+      run: bun x ng build
+
+    - name: Lint Angular App
+      working-directory: ./apps/frontend
+      run: bun run lint
