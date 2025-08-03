@@ -1,21 +1,36 @@
 {
   "name": "backend",
   "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.1.0",
-    "ts-node": "^10.9.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5.9.2"
-  },
   "dependencies": {
+    "@typescript-eslint/typescript-estree": "^8.38.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "sanitize-filename": "^1.6.3"
-  }
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@types/bun": "latest",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "5.8.3",
+    "typescript-eslint": "^8.30.0"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir ./dist",
+    "lint": "bun eslint src/**/*.ts",
+    "format": "bun prettier --write 'src/**/*.ts'"
+  },
+  "type": "module"
 }
