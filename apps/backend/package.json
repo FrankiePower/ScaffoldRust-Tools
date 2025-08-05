@@ -32,9 +32,9 @@
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "build": "bun build src/index.ts --outdir ./dist",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "bun x jest",
+    "test:watch": "bun x jest --watch",
+    "test:coverage": "bun x jest --coverage",
     "lint": "bun eslint src/**/*.ts",
     "format": "bun prettier --write 'src/**/*.ts'"
   },
