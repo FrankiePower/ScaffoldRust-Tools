@@ -12,15 +12,14 @@ class MockChildProcess extends EventEmitter {
   public stderr = new EventEmitter();
   public killed = false;
   public exitCode: number | null = null;
-
-  kill(signal?: string): boolean {
+  public kill = jest.fn().mockImplementation((signal?: string): boolean => {
     this.killed = true;
     // Simulate the process being killed
     setTimeout(() => {
       this.emit('exit', null, signal);
     }, 10);
     return true;
-  }
+  });
 
   // Simulate successful process completion
   simulateSuccess(exitCode: number = 0, stdout: string = '', stderr: string = '') {
@@ -224,9 +223,10 @@ describe('CommandExecutor', () => {
       
       const promise = executeCommand(command, args);
       
-      setTimeout(() => {
+      // Use process.nextTick instead of setTimeout for better test reliability
+      process.nextTick(() => {
         mockChild.emit('close', null);
-      }, 10);
+      });
       
       const result = await promise;
       
