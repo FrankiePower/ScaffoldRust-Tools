@@ -11,7 +11,10 @@ app.get('/', (_, res) =>
 // Test endpoint for fileManager functionality
 app.post('/api/test-filemanager', async (req, res) => {
   try {
-    const { baseName = 'test-project', rustCode = 'pub fn hello() -> &\'static str { "Hello, Soroban!" }' } = req.body;
+    const {
+      baseName = 'test-project',
+      rustCode = 'pub fn hello() -> &\'static str { "Hello, Soroban!" }',
+    } = req.body;
 
     // Test sanitization
     const sanitized = getSanitizedDirName(baseName);
@@ -27,7 +30,7 @@ app.post('/api/test-filemanager', async (req, res) => {
       success: true,
       sanitizedName: sanitized,
       tempDir: project.tempDir,
-      message: 'FileManager test completed successfully - Rust project created and cleaned up'
+      message: 'FileManager test completed successfully - Rust project created and cleaned up',
     };
 
     // Cleanup
@@ -37,7 +40,7 @@ app.post('/api/test-filemanager', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });

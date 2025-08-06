@@ -26,10 +26,10 @@ export interface ProjectSetupOptions {
 
 /**
  * Sanitizes a directory name to prevent path traversal and ensure cross-platform compatibility
- * 
+ *
  * @param baseName - The base name to sanitize
  * @returns A sanitized directory name safe for use across platforms
- * 
+ *
  * @example
  * ```typescript
  * getSanitizedDirName('../malicious') // returns 'malicious'
@@ -70,12 +70,12 @@ export function getSanitizedDirName(baseName: string): string {
 
 /**
  * Creates a unique, sanitized temporary directory for Rust project compilation
- * 
+ *
  * @param options - Configuration options for directory creation
  * @returns Promise resolving to ProjectSetup with directory path and cleanup function
- * 
+ *
  * @throws {Error} When directory creation fails
- * 
+ *
  * @example
  * ```typescript
  * const project = await setupProject({ baseName: 'my-contract' });
@@ -114,19 +114,21 @@ export async function setupProject(options: ProjectSetupOptions = {}): Promise<P
 
     return {
       tempDir,
-      cleanup: () => cleanupProject(tempDir)
+      cleanup: () => cleanupProject(tempDir),
     };
   } catch (error) {
-    throw new Error(`Failed to create temporary directory: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to create temporary directory: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
 /**
  * Safely removes a temporary project directory and all its contents
- * 
+ *
  * @param tempDir - Absolute path to the temporary directory to remove
  * @throws {Error} When cleanup fails or path validation fails
- * 
+ *
  * @example
  * ```typescript
  * await cleanupProject('/tmp/project_1234567890_abcdef');
@@ -158,13 +160,15 @@ export async function cleanupProject(tempDir: string): Promise<void> {
     // Remove the directory and all its contents
     await fs.rm(tempDir, { recursive: true, force: true });
   } catch (error) {
-    throw new Error(`Failed to cleanup directory ${tempDir}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to cleanup directory ${tempDir}: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
 /**
  * Creates a basic Rust project structure with Cargo.toml and lib.rs
- * 
+ *
  * @param tempDir - The temporary directory to create the project in
  * @param rustCode - The Rust code to write to lib.rs
  * @throws {Error} When file creation fails
@@ -218,8 +222,9 @@ debug-assertions = true
 
     // Write lib.rs
     await fs.writeFile(join(srcDir, 'lib.rs'), rustCode, 'utf8');
-
   } catch (error) {
-    throw new Error(`Failed to create Rust project structure: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to create Rust project structure: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }

@@ -7,7 +7,7 @@ import {
   cleanupProject,
   getSanitizedDirName,
   createRustProject,
-  type ProjectSetup
+  type ProjectSetup,
 } from './fileManager';
 
 describe('fileManager Security Tests', () => {
@@ -158,7 +158,7 @@ describe('fileManager Security Tests', () => {
 
       const project = await setupProject({
         baseName: 'test',
-        tempRoot: customTemp
+        tempRoot: customTemp,
       });
       testDirs.push(project.tempDir);
 
@@ -267,8 +267,12 @@ mod test {
       testDirs.push(project.tempDir);
 
       await expect(createRustProject('', 'code')).rejects.toThrow('Invalid tempDir provided');
-      await expect(createRustProject(project.tempDir, '')).rejects.toThrow('Invalid rustCode provided');
-      await expect(createRustProject(project.tempDir, null as any)).rejects.toThrow('Invalid rustCode provided');
+      await expect(createRustProject(project.tempDir, '')).rejects.toThrow(
+        'Invalid rustCode provided'
+      );
+      await expect(createRustProject(project.tempDir, null as any)).rejects.toThrow(
+        'Invalid rustCode provided'
+      );
 
       await project.cleanup();
     });
