@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
+import { describe, it, expect, afterEach } from 'bun:test';
 import { promises as fs } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -7,7 +7,6 @@ import {
   cleanupProject,
   getSanitizedDirName,
   createRustProject,
-  type ProjectSetup,
 } from './fileManager';
 
 describe('fileManager Security Tests', () => {
@@ -79,9 +78,9 @@ describe('fileManager Security Tests', () => {
     });
 
     it('should handle null and undefined inputs', () => {
-      expect(getSanitizedDirName(null as any)).toBe('');
-      expect(getSanitizedDirName(undefined as any)).toBe('');
-      expect(getSanitizedDirName(123 as any)).toBe('');
+      expect(getSanitizedDirName(null as unknown as string)).toBe('');
+      expect(getSanitizedDirName(undefined as unknown as string)).toBe('');
+      expect(getSanitizedDirName(123 as unknown as string)).toBe('');
     });
 
     it('should preserve valid directory names', () => {
@@ -176,7 +175,7 @@ describe('fileManager Security Tests', () => {
       const project = await setupProject({ baseName: 'cleanup-test' });
 
       // Verify directory exists
-      let stats = await fs.stat(project.tempDir);
+      const stats = await fs.stat(project.tempDir);
       expect(stats.isDirectory()).toBe(true);
 
       // Create some files in the directory
@@ -209,8 +208,12 @@ describe('fileManager Security Tests', () => {
 
     it('should validate input parameters', async () => {
       await expect(cleanupProject('')).rejects.toThrow('Invalid tempDir provided');
-      await expect(cleanupProject(null as any)).rejects.toThrow('Invalid tempDir provided');
-      await expect(cleanupProject(undefined as any)).rejects.toThrow('Invalid tempDir provided');
+      await expect(cleanupProject(null as unknown as string)).rejects.toThrow(
+        'Invalid tempDir provided'
+      );
+      await expect(cleanupProject(undefined as unknown as string)).rejects.toThrow(
+        'Invalid tempDir provided'
+      );
     });
   });
 
@@ -270,7 +273,7 @@ mod test {
       await expect(createRustProject(project.tempDir, '')).rejects.toThrow(
         'Invalid rustCode provided'
       );
-      await expect(createRustProject(project.tempDir, null as any)).rejects.toThrow(
+      await expect(createRustProject(project.tempDir, null as unknown as string)).rejects.toThrow(
         'Invalid rustCode provided'
       );
 
