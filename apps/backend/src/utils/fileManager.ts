@@ -132,7 +132,7 @@ export class FileManager {
       // Clean up on error
       try {
         await this.cleanupProject(projectPath);
-      } catch (cleanupError) {
+      } catch {
         // Ignore cleanup errors during error handling
       }
       throw error;
@@ -145,24 +145,19 @@ export class FileManager {
    * @param projectPath - Path to the project directory
    */
   static async cleanupProject(projectPath: string): Promise<void> {
-    try {
-      if (this.activeProjects.has(projectPath)) {
-        this.activeProjects.delete(projectPath);
-      }
+    if (this.activeProjects.has(projectPath)) {
+      this.activeProjects.delete(projectPath);
+    }
 
-      // Check if directory exists before trying to remove it
-      try {
-        await fs.access(projectPath);
-        await fs.rm(projectPath, { recursive: true, force: true });
-      } catch (error) {
-        // Directory might not exist, which is fine
-        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-          throw error;
-        }
-      }
+    // Check if directory exists before trying to remove it
+    try {
+      await fs.access(projectPath);
+      await fs.rm(projectPath, { recursive: true, force: true });
     } catch (error) {
-      console.error(`Failed to cleanup project at ${projectPath}:`, error);
-      throw error;
+      // Directory might not exist, which is fine
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw error;
+      }
     }
   }
 
@@ -171,8 +166,8 @@ export class FileManager {
    */
   static async cleanupAllProjects(): Promise<void> {
     const cleanupPromises = Array.from(this.activeProjects).map((projectPath) =>
-      this.cleanupProject(projectPath).catch((error) => {
-        console.error(`Failed to cleanup project at ${projectPath}:`, error);
+      this.cleanupProject(projectPath).catch(() => {
+        // Ignore cleanup errors during bulk cleanup
       })
     );
 

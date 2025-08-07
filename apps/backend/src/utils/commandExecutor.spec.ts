@@ -57,7 +57,7 @@ describe('CommandExecutor', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockChild = new MockChildProcess();
-    mockSpawn.mockReturnValue(mockChild as any);
+    mockSpawn.mockReturnValue(mockChild as unknown as ChildProcess);
   });
 
   afterEach(() => {
@@ -197,7 +197,7 @@ describe('CommandExecutor', () => {
 
       try {
         await promise;
-      } catch (error) {
+      } catch {
         // Expected to throw
       }
 
@@ -211,8 +211,8 @@ describe('CommandExecutor', () => {
       const args: string[] = [];
 
       const promise = executeCommand(command, args);
-      const error = new Error('ENOENT: no such file or directory');
-      mockChild.simulateError(error);
+      const spawnError = new Error('ENOENT: no such file or directory');
+      mockChild.simulateError(spawnError);
 
       await expect(promise).rejects.toThrow('ENOENT: no such file or directory');
     });

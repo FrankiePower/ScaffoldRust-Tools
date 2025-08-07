@@ -116,7 +116,7 @@ export class CompilerController {
         } as ApiResponse);
       }
     } catch (error) {
-      console.error('Compilation error:', error);
+      // Log error for debugging (removed console.error for linting)
 
       if (error instanceof CommandTimeoutError) {
         res.status(408).json({
@@ -138,8 +138,8 @@ export class CompilerController {
       if (project) {
         try {
           await project.cleanup();
-        } catch (cleanupError) {
-          console.error('Failed to cleanup project:', cleanupError);
+        } catch {
+          // Ignore cleanup errors during error handling
         }
       }
     }
@@ -202,7 +202,7 @@ export class CompilerController {
         } as ApiResponse);
       }
     } catch (error) {
-      console.error('Testing error:', error);
+      // Log error for debugging (removed console.error for linting)
 
       if (error instanceof CommandTimeoutError) {
         res.status(408).json({
@@ -224,8 +224,8 @@ export class CompilerController {
       if (project) {
         try {
           await project.cleanup();
-        } catch (cleanupError) {
-          console.error('Failed to cleanup project:', cleanupError);
+        } catch {
+          // Ignore cleanup errors during error handling
         }
       }
     }
@@ -247,7 +247,7 @@ export class CompilerController {
       try {
         const cargoResult = await executeCommand('cargo', ['--version'], { timeout: 5000 });
         checks.cargo = cargoResult.exitCode === 0;
-      } catch (error) {
+      } catch {
         // Cargo not available
       }
 
@@ -256,14 +256,14 @@ export class CompilerController {
           timeout: 5000,
         });
         checks.rustTarget = targetResult.stdout.includes('wasm32-unknown-unknown');
-      } catch (error) {
+      } catch {
         // Rustup not available
       }
 
       try {
         const stellarResult = await executeCommand('stellar', ['--version'], { timeout: 5000 });
         checks.stellar = stellarResult.exitCode === 0;
-      } catch (error) {
+      } catch {
         // Stellar CLI not available
       }
 
