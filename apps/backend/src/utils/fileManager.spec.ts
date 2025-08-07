@@ -11,7 +11,7 @@ jest.mock('fs', () => ({
     readFile: jest.fn(),
     rm: jest.fn(),
     access: jest.fn(),
-  }
+  },
 }));
 jest.mock('os');
 
@@ -22,7 +22,7 @@ describe('FileManager', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockTmpdir.mockReturnValue('/tmp');
-    
+
     // Reset static state
     (FileManager as any).activeProjects = new Set<string>();
   });
@@ -82,10 +82,10 @@ describe('FileManager', () => {
       await FileManager.createProject(config);
 
       // Check that Cargo.toml includes custom dependencies
-      const cargoTomlCall = mockFs.writeFile.mock.calls.find(call => 
+      const cargoTomlCall = mockFs.writeFile.mock.calls.find((call) =>
         call[0].toString().endsWith('Cargo.toml')
       );
-      
+
       expect(cargoTomlCall).toBeDefined();
       const cargoTomlContent = cargoTomlCall![1] as string;
       expect(cargoTomlContent).toContain('custom-crate = "1.0.0"');
@@ -160,27 +160,27 @@ describe('FileManager', () => {
   describe('cleanupProject', () => {
     it('should remove project directory', async () => {
       const projectPath = '/tmp/test-project-123';
-      
+
       // Add to active projects first
       (FileManager as any).activeProjects.add(projectPath);
-      
+
       mockFs.access.mockResolvedValue(undefined);
       mockFs.rm.mockResolvedValue(undefined);
 
       await FileManager.cleanupProject(projectPath);
 
-      expect(mockFs.rm).toHaveBeenCalledWith(projectPath, { 
-        recursive: true, 
-        force: true 
+      expect(mockFs.rm).toHaveBeenCalledWith(projectPath, {
+        recursive: true,
+        force: true,
       });
-      
+
       const activeProjects = FileManager.getActiveProjects();
       expect(activeProjects).not.toContain(projectPath);
     });
 
     it('should handle non-existent directory gracefully', async () => {
       const projectPath = '/tmp/non-existent-project';
-      
+
       const error = new Error('ENOENT: no such file or directory') as NodeJS.ErrnoException;
       error.code = 'ENOENT';
       mockFs.access.mockRejectedValue(error);
@@ -191,7 +191,7 @@ describe('FileManager', () => {
 
     it('should propagate other filesystem errors', async () => {
       const projectPath = '/tmp/test-project';
-      
+
       mockFs.access.mockResolvedValue(undefined);
       const error = new Error('Permission denied');
       mockFs.rm.mockRejectedValue(error);
@@ -203,20 +203,20 @@ describe('FileManager', () => {
   describe('cleanupAllProjects', () => {
     it('should cleanup all active projects', async () => {
       const projects = ['/tmp/project1', '/tmp/project2', '/tmp/project3'];
-      
+
       // Add projects to active set
-      projects.forEach(path => (FileManager as any).activeProjects.add(path));
-      
+      projects.forEach((path) => (FileManager as any).activeProjects.add(path));
+
       mockFs.access.mockResolvedValue(undefined);
       mockFs.rm.mockResolvedValue(undefined);
 
       await FileManager.cleanupAllProjects();
 
       expect(mockFs.rm).toHaveBeenCalledTimes(3);
-      projects.forEach(path => {
-        expect(mockFs.rm).toHaveBeenCalledWith(path, { 
-          recursive: true, 
-          force: true 
+      projects.forEach((path) => {
+        expect(mockFs.rm).toHaveBeenCalledWith(path, {
+          recursive: true,
+          force: true,
         });
       });
 
@@ -226,9 +226,9 @@ describe('FileManager', () => {
 
     it('should handle partial cleanup failures gracefully', async () => {
       const projects = ['/tmp/project1', '/tmp/project2'];
-      
-      projects.forEach(path => (FileManager as any).activeProjects.add(path));
-      
+
+      projects.forEach((path) => (FileManager as any).activeProjects.add(path));
+
       mockFs.access.mockResolvedValue(undefined);
       mockFs.rm
         .mockResolvedValueOnce(undefined) // First project succeeds
@@ -295,8 +295,8 @@ describe('FileManager', () => {
   describe('getActiveProjects', () => {
     it('should return list of active projects', () => {
       const projects = ['/tmp/project1', '/tmp/project2'];
-      
-      projects.forEach(path => (FileManager as any).activeProjects.add(path));
+
+      projects.forEach((path) => (FileManager as any).activeProjects.add(path));
 
       const activeProjects = FileManager.getActiveProjects();
 
@@ -323,7 +323,7 @@ describe('FileManager', () => {
       mockFs.rm.mockResolvedValue(undefined);
 
       const project = await FileManager.createProject(config);
-      
+
       // Verify project is in active list
       expect(FileManager.getActiveProjects()).toContain(project.projectPath);
 
@@ -331,9 +331,9 @@ describe('FileManager', () => {
       await project.cleanup();
 
       // Verify project was removed
-      expect(mockFs.rm).toHaveBeenCalledWith(project.projectPath, { 
-        recursive: true, 
-        force: true 
+      expect(mockFs.rm).toHaveBeenCalledWith(project.projectPath, {
+        recursive: true,
+        force: true,
       });
       expect(FileManager.getActiveProjects()).not.toContain(project.projectPath);
     });

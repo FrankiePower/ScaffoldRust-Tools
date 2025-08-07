@@ -75,63 +75,59 @@ export class FileManager {
 
   /**
    * Creates a temporary Rust project with the provided code
-   * 
+   *
    * @param config - Project configuration
    * @returns Promise that resolves to project information
    */
   static async createProject(config: ProjectConfig): Promise<ProjectInfo> {
     const { code, projectName = 'soroban-contract', dependencies = {} } = config;
-    
+
     // Sanitize the project name
     const safeName = sanitizeFilename(projectName) || 'soroban-contract';
-    
+
     // Create unique temporary directory
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(7);
     const projectDirName = `${safeName}-${timestamp}-${random}`;
-    
+
     const projectPath = join(tmpdir(), projectDirName);
     const sourcePath = join(projectPath, 'src', 'lib.rs');
     const cargoPath = join(projectPath, 'Cargo.toml');
-    
+
     try {
       // Create project directory structure
       await fs.mkdir(projectPath, { recursive: true });
       await fs.mkdir(join(projectPath, 'src'), { recursive: true });
-      
+
       // Generate Cargo.toml with any additional dependencies
       let cargoToml = DEFAULT_CARGO_TOML;
       if (Object.keys(dependencies).length > 0) {
         const depsSection = Object.entries(dependencies)
           .map(([name, version]) => `${name} = "${version}"`)
           .join('\n');
-        cargoToml = cargoToml.replace(
-          '[dependencies]',
-          `[dependencies]\n${depsSection}`
-        );
+        cargoToml = cargoToml.replace('[dependencies]', `[dependencies]\n${depsSection}`);
       }
-      
+
       // Write Cargo.toml
       await fs.writeFile(cargoPath, cargoToml, 'utf8');
-      
+
       // Write source code
       await fs.writeFile(sourcePath, code, 'utf8');
-      
+
       // Track active project
       this.activeProjects.add(projectPath);
-      
+
       // Create cleanup function
       const cleanup = async () => {
         await this.cleanupProject(projectPath);
       };
-      
+
       return {
         projectPath,
         sourcePath,
         cargoPath,
         cleanup,
       };
-      
     } catch (error) {
       // Clean up on error
       try {
@@ -145,7 +141,7 @@ export class FileManager {
 
   /**
    * Cleans up a temporary project directory
-   * 
+   *
    * @param projectPath - Path to the project directory
    */
   static async cleanupProject(projectPath: string): Promise<void> {
@@ -153,7 +149,7 @@ export class FileManager {
       if (this.activeProjects.has(projectPath)) {
         this.activeProjects.delete(projectPath);
       }
-      
+
       // Check if directory exists before trying to remove it
       try {
         await fs.access(projectPath);
@@ -174,12 +170,12 @@ export class FileManager {
    * Cleans up all active projects (useful for shutdown)
    */
   static async cleanupAllProjects(): Promise<void> {
-    const cleanupPromises = Array.from(this.activeProjects).map(projectPath =>
-      this.cleanupProject(projectPath).catch(error => {
+    const cleanupPromises = Array.from(this.activeProjects).map((projectPath) =>
+      this.cleanupProject(projectPath).catch((error) => {
         console.error(`Failed to cleanup project at ${projectPath}:`, error);
       })
     );
-    
+
     await Promise.all(cleanupPromises);
     this.activeProjects.clear();
   }
@@ -193,7 +189,7 @@ export class FileManager {
 
   /**
    * Reads the contents of a file within a project
-   * 
+   *
    * @param filePath - Path to the file
    * @returns Promise that resolves to file contents
    */
@@ -207,7 +203,7 @@ export class FileManager {
 
   /**
    * Writes content to a file within a project
-   * 
+   *
    * @param filePath - Path to the file
    * @param content - Content to write
    */

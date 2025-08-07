@@ -34,7 +34,6 @@ export interface ApiResponse {
  * Compiler controller for handling compilation and testing requests
  */
 export class CompilerController {
-  
   /**
    * Handles compilation requests
    * POST /api/compile
@@ -46,7 +45,7 @@ export class CompilerController {
     try {
       // Validate request body
       const { code, projectName, dependencies }: CompileRequest = req.body;
-      
+
       if (!code || typeof code !== 'string') {
         res.status(400).json({
           success: false,
@@ -70,18 +69,26 @@ export class CompilerController {
       project = await FileManager.createProject(config);
 
       // Build the project
-      const buildResult = await executeCommand('cargo', ['build', '--target', 'wasm32-unknown-unknown', '--release'], {
-        cwd: project.projectPath,
-        timeout: 30000, // 30 seconds
-      });
+      const buildResult = await executeCommand(
+        'cargo',
+        ['build', '--target', 'wasm32-unknown-unknown', '--release'],
+        {
+          cwd: project.projectPath,
+          timeout: 30000, // 30 seconds
+        }
+      );
 
       if (buildResult.exitCode === 0) {
         // Try to optimize with stellar CLI if available
         try {
-          const optimizeResult = await executeCommand('stellar', ['contract', 'build', '--package', 'soroban-contract'], {
-            cwd: project.projectPath,
-            timeout: 30000,
-          });
+          const optimizeResult = await executeCommand(
+            'stellar',
+            ['contract', 'build', '--package', 'soroban-contract'],
+            {
+              cwd: project.projectPath,
+              timeout: 30000,
+            }
+          );
 
           res.json({
             success: true,
@@ -108,10 +115,9 @@ export class CompilerController {
           duration: Date.now() - startTime,
         } as ApiResponse);
       }
-
     } catch (error) {
       console.error('Compilation error:', error);
-      
+
       if (error instanceof CommandTimeoutError) {
         res.status(408).json({
           success: false,
@@ -150,7 +156,7 @@ export class CompilerController {
     try {
       // Validate request body
       const { code, projectName, dependencies }: CompileRequest = req.body;
-      
+
       if (!code || typeof code !== 'string') {
         res.status(400).json({
           success: false,
@@ -195,10 +201,9 @@ export class CompilerController {
           duration: Date.now() - startTime,
         } as ApiResponse);
       }
-
     } catch (error) {
       console.error('Testing error:', error);
-      
+
       if (error instanceof CommandTimeoutError) {
         res.status(408).json({
           success: false,
@@ -247,7 +252,9 @@ export class CompilerController {
       }
 
       try {
-        const targetResult = await executeCommand('rustup', ['target', 'list', '--installed'], { timeout: 5000 });
+        const targetResult = await executeCommand('rustup', ['target', 'list', '--installed'], {
+          timeout: 5000,
+        });
         checks.rustTarget = targetResult.stdout.includes('wasm32-unknown-unknown');
       } catch (error) {
         // Rustup not available
@@ -268,7 +275,6 @@ export class CompilerController {
         checks,
         timestamp: new Date().toISOString(),
       });
-
     } catch (error) {
       res.status(500).json({
         success: false,

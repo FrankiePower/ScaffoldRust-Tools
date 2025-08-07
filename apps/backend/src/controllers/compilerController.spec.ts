@@ -18,14 +18,14 @@ describe('CompilerController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockJson = jest.fn().mockReturnThis();
     mockStatus = jest.fn().mockReturnThis();
-    
+
     mockRequest = {
       body: {},
     };
-    
+
     mockResponse = {
       json: mockJson,
       status: mockStatus,
@@ -38,7 +38,7 @@ describe('CompilerController', () => {
       cargoPath: '/tmp/test-project/Cargo.toml',
       cleanup: jest.fn().mockResolvedValue(undefined),
     };
-    
+
     mockFileManager.createProject.mockResolvedValue(mockProjectInfo);
   });
 
@@ -94,7 +94,9 @@ describe('CompilerController', () => {
       expect(mockJson).toHaveBeenCalledWith({
         success: true,
         message: 'Compilation and optimization successful',
-        output: expect.stringContaining('Build Output:\nCompiling test-project v0.1.0\n\nOptimization Output:\nOptimization complete'),
+        output: expect.stringContaining(
+          'Build Output:\nCompiling test-project v0.1.0\n\nOptimization Output:\nOptimization complete'
+        ),
         duration: expect.any(Number),
       });
     });
@@ -161,7 +163,7 @@ describe('CompilerController', () => {
       Object.defineProperty(timeoutError, 'message', {
         value: 'Command exceeded time limit of 30000ms',
         writable: false,
-        configurable: true
+        configurable: true,
       });
       mockExecuteCommand.mockRejectedValueOnce(timeoutError);
 
@@ -269,14 +271,10 @@ describe('CompilerController', () => {
 
       await CompilerController.test(mockRequest as Request, mockResponse as Response);
 
-      expect(mockExecuteCommand).toHaveBeenCalledWith(
-        'cargo',
-        ['test'],
-        {
-          cwd: '/tmp/test-project',
-          timeout: 30000,
-        }
-      );
+      expect(mockExecuteCommand).toHaveBeenCalledWith('cargo', ['test'], {
+        cwd: '/tmp/test-project',
+        timeout: 30000,
+      });
 
       expect(mockJson).toHaveBeenCalledWith({
         success: true,
@@ -320,7 +318,7 @@ describe('CompilerController', () => {
       Object.defineProperty(timeoutError, 'message', {
         value: 'Command exceeded time limit of 30000ms',
         writable: false,
-        configurable: true
+        configurable: true,
       });
       mockExecuteCommand.mockRejectedValueOnce(timeoutError);
 

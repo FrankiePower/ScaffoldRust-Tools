@@ -38,7 +38,7 @@ export class CommandTimeoutError extends Error {
 
 /**
  * Executes a shell command with timeout enforcement
- * 
+ *
  * @param command - The command to execute
  * @param args - Arguments for the command
  * @param options - Execution options including timeout
@@ -70,11 +70,11 @@ export async function executeCommand(
       // Set up timeout
       const timeoutId = setTimeout(() => {
         timedOut = true;
-        
+
         // Kill the process if it's still running
         if (childProcess && !childProcess.killed) {
           childProcess.kill('SIGTERM');
-          
+
           // Force kill after 5 seconds if SIGTERM doesn't work
           setTimeout(() => {
             if (childProcess && !childProcess.killed) {
@@ -82,7 +82,7 @@ export async function executeCommand(
             }
           }, 5000);
         }
-        
+
         reject(new CommandTimeoutError(timeout));
       }, timeout);
 
@@ -103,7 +103,7 @@ export async function executeCommand(
       // Handle process completion
       childProcess.on('close', (exitCode: number | null) => {
         clearTimeout(timeoutId);
-        
+
         // Don't resolve if we already timed out
         if (timedOut) {
           return;
@@ -120,7 +120,7 @@ export async function executeCommand(
       // Handle process errors
       childProcess.on('error', (error: Error) => {
         clearTimeout(timeoutId);
-        
+
         // Don't reject if we already timed out
         if (timedOut) {
           return;
@@ -128,7 +128,6 @@ export async function executeCommand(
 
         reject(error);
       });
-
     } catch (error) {
       reject(error);
     }
