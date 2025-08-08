@@ -1,5 +1,5 @@
 import { executeCommand, CommandTimeoutError } from './commandExecutor';
-import { spawn } from 'child_process';
+import { spawn, type ChildProcess } from 'child_process';
 import { EventEmitter } from 'events';
 
 // Mock child_process

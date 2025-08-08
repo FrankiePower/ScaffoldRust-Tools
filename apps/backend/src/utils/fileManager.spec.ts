@@ -204,7 +204,9 @@ describe('FileManager', () => {
       const projects = ['/tmp/project1', '/tmp/project2', '/tmp/project3'];
 
       // Add projects to active set
-      projects.forEach((path) => (FileManager as unknown as { activeProjects: Set<string> }).activeProjects.add(path));
+      projects.forEach((path) =>
+        (FileManager as unknown as { activeProjects: Set<string> }).activeProjects.add(path)
+      );
 
       mockFs.access.mockResolvedValue(undefined);
       mockFs.rm.mockResolvedValue(undefined);
@@ -226,7 +228,9 @@ describe('FileManager', () => {
     it('should handle partial cleanup failures gracefully', async () => {
       const projects = ['/tmp/project1', '/tmp/project2'];
 
-      projects.forEach((path) => (FileManager as unknown as { activeProjects: Set<string> }).activeProjects.add(path));
+      projects.forEach((path) =>
+        (FileManager as unknown as { activeProjects: Set<string> }).activeProjects.add(path)
+      );
 
       mockFs.access.mockResolvedValue(undefined);
       mockFs.rm
@@ -295,7 +299,9 @@ describe('FileManager', () => {
     it('should return list of active projects', () => {
       const projects = ['/tmp/project1', '/tmp/project2'];
 
-      projects.forEach((path) => (FileManager as unknown as { activeProjects: Set<string> }).activeProjects.add(path));
+      projects.forEach((path) =>
+        (FileManager as unknown as { activeProjects: Set<string> }).activeProjects.add(path)
+      );
 
       const activeProjects = FileManager.getActiveProjects();
 
