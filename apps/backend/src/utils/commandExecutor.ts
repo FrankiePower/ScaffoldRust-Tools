@@ -1,164 +1,74 @@
-import { spawn, ChildProcess } from 'child_process';
+import { spawn, type SpawnOptionsWithoutStdio } from 'child_process';
+
+const DEFAULT_TIMEOUT = 30000;
 
 /**
- * Result of a command execution
- */
-export interface CommandResult {
-  /** Exit code of the command */
-  exitCode: number;
-  /** Standard output */
-  stdout: string;
-  /** Standard error output */
-  stderr: string;
-  /** Whether the command was killed due to timeout */
-  timedOut: boolean;
-}
-
-/**
- * Options for command execution
- */
-export interface ExecuteOptions {
-  /** Working directory for the command */
-  cwd?: string;
-  /** Environment variables */
-  env?: Record<string, string>;
-  /** Timeout in milliseconds (default: 30000ms = 30s) */
-  timeout?: number;
-}
-
-/**
- * Error thrown when a command exceeds the timeout limit
- */
-export class CommandTimeoutError extends Error {
-  constructor(timeout: number) {
-    super(`Command exceeded time limit of ${timeout}ms`);
-    this.name = 'CommandTimeoutError';
-  }
-}
-
-/**
- * Executes a shell command with timeout enforcement
- *
- * @param command - The command to execute
- * @param args - Arguments for the command
- * @param options - Execution options including timeout
- * @returns Promise that resolves to CommandResult
- * @throws CommandTimeoutError if command exceeds timeout
+ * Executes a shell command securely with a timeout
+ * @param command The command to execute
+ * @param timeout Maximum execution time in milliseconds (default: 30000)
+ * @returns Promise that resolves with the command output
+ * @throws Error with stderr content if command fails or times out
  */
 export async function executeCommand(
   command: string,
-  args: string[] = [],
-  options: ExecuteOptions = {}
-): Promise<CommandResult> {
-  const { cwd, env = process.env, timeout = 30000 } = options;
+  timeout: number = DEFAULT_TIMEOUT
+): Promise<string> {
+  // Validate inputs
+  if (typeof command !== 'string' || command.trim() === '') {
+    throw new Error('Command must be a non-empty string');
+  }
 
-  return new Promise<CommandResult>((resolve, reject) => {
-    // Buffer to collect stdout and stderr
+  if (typeof timeout !== 'number' || timeout <= 0) {
+    throw new Error('Timeout must be a positive number');
+  }
+
+  const options: SpawnOptionsWithoutStdio = {
+    shell: '/bin/bash',
+    env: { ...process.env },
+  };
+
+  return new Promise((resolve, reject) => {
+    const child = spawn('bash', ['-c', command], options);
+
     let stdout = '';
     let stderr = '';
-    let timedOut = false;
-    let childProcess: ChildProcess;
+    let timeoutId: NodeJS.Timeout;
 
-    try {
-      // Spawn the child process
-      childProcess = spawn(command, args, {
-        cwd,
-        env: { ...process.env, ...env },
-        stdio: ['pipe', 'pipe', 'pipe'],
-      });
-
-      // Set up timeout
-      const timeoutId = setTimeout(() => {
-        timedOut = true;
-
-        // Kill the process if it's still running
-        if (childProcess && !childProcess.killed) {
-          childProcess.kill('SIGTERM');
-
-          // Force kill after 5 seconds if SIGTERM doesn't work
-          setTimeout(() => {
-            if (childProcess && !childProcess.killed) {
-              childProcess.kill('SIGKILL');
-            }
-          }, 5000);
-        }
-
-        reject(new CommandTimeoutError(timeout));
+    // Set up timeout
+    if (timeout !== Infinity) {
+      timeoutId = setTimeout(() => {
+        child.kill('SIGTERM');
+        reject(new Error(`Command timed out after ${timeout}ms`));
       }, timeout);
-
-      // Collect stdout data
-      if (childProcess.stdout) {
-        childProcess.stdout.on('data', (data: Buffer) => {
-          stdout += data.toString();
-        });
-      }
-
-      // Collect stderr data
-      if (childProcess.stderr) {
-        childProcess.stderr.on('data', (data: Buffer) => {
-          stderr += data.toString();
-        });
-      }
-
-      // Handle process completion
-      childProcess.on('close', (exitCode: number | null) => {
-        clearTimeout(timeoutId);
-
-        // Don't resolve if we already timed out
-        if (timedOut) {
-          return;
-        }
-
-        resolve({
-          exitCode: exitCode ?? -1,
-          stdout: stdout.trim(),
-          stderr: stderr.trim(),
-          timedOut: false,
-        });
-      });
-
-      // Handle process errors
-      childProcess.on('error', (error: Error) => {
-        clearTimeout(timeoutId);
-
-        // Don't reject if we already timed out
-        if (timedOut) {
-          return;
-        }
-
-        reject(error);
-      });
-
-      // Handle process being killed
-      childProcess.on('exit', (code: number | null, signal: string | null) => {
-        if (signal === 'SIGTERM' || signal === 'SIGKILL') {
-          clearTimeout(timeoutId);
-
-          // This was likely our timeout kill, but check the flag to be sure
-          if (timedOut) {
-            return; // The timeout handler will reject
-          }
-        }
-      });
-    } catch (error) {
-      reject(error);
     }
-  });
-}
 
-/**
- * Executes a command with a specific timeout and returns the result
- * This is a convenience wrapper around executeCommand
- *
- * @param command - The command to execute
- * @param args - Arguments for the command
- * @param timeoutMs - Timeout in milliseconds
- * @returns Promise that resolves to CommandResult
- */
-export async function executeCommandWithTimeout(
-  command: string,
-  args: string[] = [],
-  timeoutMs: number = 30000
-): Promise<CommandResult> {
-  return executeCommand(command, args, { timeout: timeoutMs });
+    child.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    child.on('close', (code) => {
+      clearTimeout(timeoutId);
+
+      if (code === 0) {
+        resolve(stdout.trim());
+      } else {
+        const error = new Error(
+          stderr.trim() || `Command failed with exit code ${code}`
+        );
+        (error as any).stderr = stderr.trim();
+        (error as any).stdout = stdout.trim();
+        (error as any).code = code;
+        reject(error);
+      }
+    });
+
+    child.on('error', (err) => {
+      clearTimeout(timeoutId);
+      reject(err);
+    });
+  });
 }

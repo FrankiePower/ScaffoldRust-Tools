@@ -1,5 +1,4 @@
 {
-  
   "name": "backend",
   "module": "index.ts",
   "dependencies": {
@@ -33,7 +32,8 @@
     "lint": "bun eslint src/**/*.ts",
     "format": "bun prettier --write 'src/**/*.ts'",
     "setup": "bun run scripts/setup.ts",
-    "clean": "bun run scripts/clean.ts"
+    "clean": "bun run scripts/clean.ts",
+    "command-executor": "bun run scripts/command-executor.ts"
   },
   "type": "module"
 }
