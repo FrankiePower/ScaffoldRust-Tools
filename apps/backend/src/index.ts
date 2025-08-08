@@ -1,5 +1,5 @@
 import express from 'express';
-import { setupProject, getSanitizedDirName, createRustProject } from './utils/fileManager';
+import { FileManager } from './utils/fileManager';
 
 const app = express();
 app.use(express.json());
@@ -12,24 +12,22 @@ app.get('/', (_, res) =>
 app.post('/api/test-filemanager', async (req, res) => {
   try {
     const {
-      baseName = 'test-project',
-      rustCode = 'pub fn hello() -> &\'static str { "Hello, Soroban!" }',
+      projectName = 'test-project',
+      code = 'pub fn hello() -> &\'static str { "Hello, Soroban!" }',
     } = req.body;
 
-    // Test sanitization
-    const sanitized = getSanitizedDirName(baseName);
-
-    // Test project setup
-    const project = await setupProject({ baseName });
-
-    // Test Rust project creation
-    await createRustProject(project.tempDir, rustCode);
+    // Test project creation using FileManager class
+    const project = await FileManager.createProject({
+      code,
+      projectName,
+    });
 
     // Success response
     const response = {
       success: true,
-      sanitizedName: sanitized,
-      tempDir: project.tempDir,
+      projectPath: project.projectPath,
+      sourcePath: project.sourcePath,
+      cargoPath: project.cargoPath,
       message: 'FileManager test completed successfully - Rust project created and cleaned up',
     };
 
