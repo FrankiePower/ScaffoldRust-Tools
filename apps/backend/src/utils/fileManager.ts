@@ -102,11 +102,7 @@ export function getSanitizedDirName(baseName: string): string {
  * Creates a unique, sanitized temporary directory for Rust project compilation
  */
 export async function setupProject(options: ProjectSetupOptions = {}): Promise<ProjectSetup> {
-  const { 
-    baseName = 'project', 
-    tempRoot = tmpdir(), 
-    rustCode = DEFAULT_RUST_CODE 
-  } = options;
+  const { baseName = 'project', tempRoot = tmpdir(), rustCode = DEFAULT_RUST_CODE } = options;
 
   // Create a unique identifier to prevent collisions
   const timestamp = Date.now();
