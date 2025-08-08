@@ -56,9 +56,7 @@ export async function executeCommand(
       if (code === 0) {
         resolve(stdout.trim());
       } else {
-        const error = new Error(
-          stderr.trim() || `Command failed with exit code ${code}`
-        );
+        const error = new Error(stderr.trim() || `Command failed with exit code ${code}`);
         (error as any).stderr = stderr.trim();
         (error as any).stdout = stdout.trim();
         (error as any).code = code;
