@@ -1,6 +1,7 @@
-import { promises as fs } from 'fs';
-import { join } from 'path';
-import { tmpdir } from 'os';
+import { promises as fs } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { randomBytes } from 'node:crypto';
 import sanitizeFilename from 'sanitize-filename';
 
 /**
@@ -85,10 +86,10 @@ export class FileManager {
     // Sanitize the project name
     const safeName = sanitizeFilename(projectName) || 'soroban-contract';
 
-    // Create unique temporary directory
+    // Create unique temporary directory with improved randomness
     const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(7);
-    const projectDirName = `${safeName}-${timestamp}-${random}`;
+    const randomId = randomBytes(8).toString('hex');
+    const projectDirName = `${safeName}-${timestamp}-${randomId}`;
 
     const projectPath = join(tmpdir(), projectDirName);
     const sourcePath = join(projectPath, 'src', 'lib.rs');

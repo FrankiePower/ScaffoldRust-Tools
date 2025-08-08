@@ -128,8 +128,37 @@ export async function executeCommand(
 
         reject(error);
       });
+
+      // Handle process being killed
+      childProcess.on('exit', (code: number | null, signal: string | null) => {
+        if (signal === 'SIGTERM' || signal === 'SIGKILL') {
+          clearTimeout(timeoutId);
+
+          // This was likely our timeout kill, but check the flag to be sure
+          if (timedOut) {
+            return; // The timeout handler will reject
+          }
+        }
+      });
     } catch (error) {
       reject(error);
     }
   });
+}
+
+/**
+ * Executes a command with a specific timeout and returns the result
+ * This is a convenience wrapper around executeCommand
+ *
+ * @param command - The command to execute
+ * @param args - Arguments for the command
+ * @param timeoutMs - Timeout in milliseconds
+ * @returns Promise that resolves to CommandResult
+ */
+export async function executeCommandWithTimeout(
+  command: string,
+  args: string[] = [],
+  timeoutMs: number = 30000
+): Promise<CommandResult> {
+  return executeCommand(command, args, { timeout: timeoutMs });
 }
