@@ -28,7 +28,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir ./dist",
+    "build": "bun build src/index.ts --outdir ./dist --target node",
     "lint": "bun eslint src/**/*.ts",
     "format": "bun prettier --write 'src/**/*.ts'"
   },

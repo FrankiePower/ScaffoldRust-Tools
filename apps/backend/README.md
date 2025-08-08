@@ -92,8 +92,9 @@ The server will start on port 3000 by default (configurable via environment vari
 | Endpoint | Method | Description | Request Body | Response |
 |----------|--------|-------------|--------------|----------|
 | `/api/compile` | POST | Compiles Rust code to WASM | `{ code: string }` | `{ success: boolean, output: string, error?: string }` |
-| `/api/test` | POST | Runs tests for Rust code | `{ code: string }` | `{ success: boolean, output: string, error?: string }` |
 | `/api/health` | GET | Server health check | None | `{ status: "ok" }` |
+| `/api/test` | POST | Runs tests for Rust code | `{ code: string }` | `{ success: boolean, output: string, error?: string }` |
+| `/api/test-filemanager` | POST | Test fileManager utilities | `{ baseName?: string, rustCode?: string }` | `{ success: boolean, sanitizedName: string, tempDir: string, message: string }` |
 
 ## Security Measures
 
@@ -130,7 +131,7 @@ backend/
 │   │   ├── compile.controller.ts
 │   │   └── test.controller.ts
 │   ├── utils/
-│   │   ├── file.utils.ts
+│   │   ├── fileManager.ts
 │   │   └── process.utils.ts
 │   ├── services/
 │   │   ├── compilation.service.ts
