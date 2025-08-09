@@ -187,34 +187,6 @@ export async function createRustProject(tempDir: string, rustCode: string): Prom
 
   try {
     // Create Cargo.toml for Soroban contract
-    const cargoToml = `[package]
-name = "temp-contract"
-version = "0.1.0"
-edition = "2021"
-
-[lib]
-crate-type = ["cdylib"]
-
-[dependencies]
-soroban-sdk = "21"
-
-[dev-dependencies]
-soroban-sdk = { version = "21", features = ["testutils"] }
-
-[profile.release]
-opt-level = "z"
-overflow-checks = true
-debug = 0
-strip = "symbols"
-debug-assertions = false
-panic = "abort"
-codegen-units = 1
-lto = true
-
-[profile.release-with-logs]
-inherits = "release"
-debug-assertions = true
-`;
 
     // Create src directory
     const srcDir = join(tempDir, 'src');
