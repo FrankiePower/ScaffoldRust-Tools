@@ -1,4 +1,5 @@
 {
+  
   "name": "backend",
   "module": "index.ts",
   "dependencies": {
@@ -22,7 +23,7 @@
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
-    "typescript": "5.8.3",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^8.30.0"
   },
   "private": true,
@@ -30,7 +31,9 @@
     "dev": "bun run --watch src/index.ts",
     "build": "bun build src/index.ts --outdir ./dist --target node",
     "lint": "bun eslint src/**/*.ts",
-    "format": "bun prettier --write 'src/**/*.ts'"
+    "format": "bun prettier --write 'src/**/*.ts'",
+    "setup": "bun run scripts/setup.ts",
+    "clean": "bun run scripts/clean.ts"
   },
   "type": "module"
 }
