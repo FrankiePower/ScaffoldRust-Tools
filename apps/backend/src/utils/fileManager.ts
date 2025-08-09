@@ -184,6 +184,36 @@ export async function createRustProject(tempDir: string, rustCode: string): Prom
   }
 
   try {
+    // Create Cargo.toml for Soroban contract
+    const cargoToml = `[package]
+name = "temp-contract"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+soroban-sdk = "21"
+
+[dev-dependencies]
+soroban-sdk = { version = "21", features = ["testutils"] }
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true
+
+[profile.release-with-logs]
+inherits = "release"
+debug-assertions = true
+`;
+
     // Create src directory
     const srcDir = join(tempDir, 'src');
     await fs.mkdir(srcDir, { recursive: true });
@@ -199,23 +229,3 @@ export async function createRustProject(tempDir: string, rustCode: string): Prom
     );
   }
 }
-
-/**
- * Legacy file manager interface
- * @deprecated Use setupProject and cleanupProject directly instead
- */
-export const fileManager = {
-  async setupProject(): Promise<string> {
-    const { tempDir } = await setupProject();
-    return tempDir;
-  },
-
-  async cleanupProject(projectPath?: string): Promise<void> {
-    if (!projectPath) {
-      throw new Error('Project path is required for cleanup');
-    }
-    await cleanupProject(projectPath);
-  },
-};
-
-export type FileManager = typeof fileManager;
