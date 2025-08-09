@@ -28,6 +28,8 @@ export interface ProjectSetupOptions {
 
 /**
  * Default Rust contract template
+ * This is a simple Soroban contract that greets a user by name.
+ * It can be customized by passing a different `rustCode` in the options.
  */
 const DEFAULT_RUST_CODE = `#![no_std]
 use soroban_sdk::{contractimpl, Env};
