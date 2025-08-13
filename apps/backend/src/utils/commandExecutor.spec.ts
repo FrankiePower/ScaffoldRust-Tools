@@ -7,7 +7,11 @@ jest.mock('child_process', () => ({
   spawn: jest.fn(),
 }));
 
-const mockSpawn = require('child_process').spawn;
+const mockSpawn = (
+  jest.requireMock('child_process') as {
+    spawn: jest.MockedFunction<(...args: unknown[]) => unknown>;
+  }
+).spawn;
 
 describe('CommandExecutor', () => {
   beforeEach(() => {

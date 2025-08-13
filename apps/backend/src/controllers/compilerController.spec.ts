@@ -12,8 +12,10 @@ const mockExecuteCommand = jest.fn() as jest.MockedFunction<
 >;
 const mockFileManager = FileManager as jest.MockedClass<typeof FileManager>;
 
-// Get the mocked modules
-const mockedCommandExecutor = require('../utils/commandExecutor');
+// Get the mocked modules using jest.requireMock
+const mockedCommandExecutor = jest.requireMock('../utils/commandExecutor') as {
+  executeCommand: typeof mockExecuteCommand;
+};
 mockedCommandExecutor.executeCommand = mockExecuteCommand;
 
 describe('CompilerController', () => {
@@ -28,9 +30,9 @@ describe('CompilerController', () => {
     };
 
     mockResponse = {
-      status: jest.fn().mockReturnThis() as any,
-      json: jest.fn() as any,
-    };
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    } as Partial<ExpressResponse>;
   });
 
   describe('compile', () => {
