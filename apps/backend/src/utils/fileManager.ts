@@ -39,6 +39,8 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
+name = "soroban-contract"
+path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
