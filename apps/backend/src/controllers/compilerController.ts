@@ -118,7 +118,10 @@ export class CompilerController {
     } catch (error) {
       // Log error for debugging (removed console.error for linting)
 
-      if (error instanceof CommandTimeoutError || (error instanceof Error && error.name === 'CommandTimeoutError')) {
+      if (
+        error instanceof CommandTimeoutError ||
+        (error instanceof Error && error.name === 'CommandTimeoutError')
+      ) {
         res.status(408).json({
           success: false,
           message: 'Compilation timed out',
@@ -204,7 +207,10 @@ export class CompilerController {
     } catch (error) {
       // Log error for debugging (removed console.error for linting)
 
-      if (error instanceof CommandTimeoutError || (error instanceof Error && error.name === 'CommandTimeoutError')) {
+      if (
+        error instanceof CommandTimeoutError ||
+        (error instanceof Error && error.name === 'CommandTimeoutError')
+      ) {
         res.status(408).json({
           success: false,
           message: 'Testing timed out',

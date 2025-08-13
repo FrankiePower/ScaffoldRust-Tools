@@ -7,7 +7,7 @@ jest.mock('child_process', () => ({
   spawn: jest.fn(),
 }));
 
-const mockSpawn = jest.mocked(require('child_process').spawn);
+const mockSpawn = require('child_process').spawn;
 
 describe('CommandExecutor', () => {
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('CommandExecutor', () => {
     it('should execute a successful command', async () => {
       const command = 'echo';
       const args = ['Hello, World!'];
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
@@ -76,7 +76,7 @@ describe('CommandExecutor', () => {
     it('should handle command with stderr output', async () => {
       const command = 'cargo';
       const args = ['build'];
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
@@ -124,7 +124,7 @@ describe('CommandExecutor', () => {
     it('should handle command with both stdout and stderr', async () => {
       const command = 'cargo';
       const args = ['test'];
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
@@ -173,7 +173,7 @@ describe('CommandExecutor', () => {
       const command = 'ls';
       const args = ['-la'];
       const options = { cwd: '/tmp' };
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
@@ -205,7 +205,7 @@ describe('CommandExecutor', () => {
       const command = 'env';
       const args: string[] = [];
       const options = { env: { CUSTOM_VAR: 'test' } };
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
@@ -239,7 +239,7 @@ describe('CommandExecutor', () => {
     it('should timeout long-running commands', async () => {
       const command = 'sleep';
       const args = ['40'];
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
@@ -250,10 +250,10 @@ describe('CommandExecutor', () => {
       mockSpawn.mockReturnValue(mockChild);
 
       const promise = executeCommand(command, args, { timeout: 1000 });
-      
+
       // Advance timers to trigger timeout
       jest.advanceTimersByTime(1000);
-      
+
       await expect(promise).rejects.toThrow(CommandTimeoutError);
       expect(mockChild.kill).toHaveBeenCalledWith('SIGTERM');
     });
@@ -261,7 +261,7 @@ describe('CommandExecutor', () => {
     it('should kill process on timeout', async () => {
       const command = 'sleep';
       const args = ['30'];
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
@@ -272,9 +272,9 @@ describe('CommandExecutor', () => {
       mockSpawn.mockReturnValue(mockChild);
 
       const promise = executeCommand(command, args, { timeout: 500 });
-      
+
       jest.advanceTimersByTime(500);
-      
+
       await expect(promise).rejects.toThrow(CommandTimeoutError);
       expect(mockChild.kill).toHaveBeenCalledWith('SIGTERM');
     });
@@ -282,7 +282,7 @@ describe('CommandExecutor', () => {
     it('should handle spawn errors', async () => {
       const command = 'nonexistent';
       const args: string[] = [];
-      
+
       const spawnError = new Error('ENOENT: no such file or directory');
       mockSpawn.mockImplementation(() => {
         throw spawnError;
@@ -294,7 +294,7 @@ describe('CommandExecutor', () => {
     it('should handle null exit code', async () => {
       const command = 'echo';
       const args = ['test'];
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
@@ -322,7 +322,7 @@ describe('CommandExecutor', () => {
     it('should use default timeout of 30 seconds', async () => {
       const command = 'sleep';
       const args = ['35'];
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },
@@ -333,10 +333,10 @@ describe('CommandExecutor', () => {
       mockSpawn.mockReturnValue(mockChild);
 
       const promise = executeCommand(command, args);
-      
+
       // Advance timers to trigger default timeout
       jest.advanceTimersByTime(30000);
-      
+
       await expect(promise).rejects.toThrow(CommandTimeoutError);
       expect(mockChild.kill).toHaveBeenCalledWith('SIGTERM');
     });
@@ -344,7 +344,7 @@ describe('CommandExecutor', () => {
     it('should trim stdout and stderr output', async () => {
       const command = 'echo';
       const args = ['output with spaces'];
-      
+
       const mockChild = {
         stdout: { on: jest.fn() },
         stderr: { on: jest.fn() },

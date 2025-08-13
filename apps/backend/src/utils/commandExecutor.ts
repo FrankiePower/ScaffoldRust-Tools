@@ -49,10 +49,7 @@ export async function executeCommand(
     const child: ChildProcess = spawn(command, args, spawnOptions);
     let stdout = '';
     let stderr = '';
-    let timeoutId: NodeJS.Timeout;
-
-    // Set up timeout
-    timeoutId = setTimeout(() => {
+    const timeoutId: NodeJS.Timeout = setTimeout(() => {
       child.kill('SIGTERM');
       reject(new CommandTimeoutError(timeout));
     }, timeout);

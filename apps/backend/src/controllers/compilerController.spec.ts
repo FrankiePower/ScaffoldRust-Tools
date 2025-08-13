@@ -1,6 +1,5 @@
 import { jest } from '@jest/globals';
-import { Request, Response } from 'express';
-import { FileManager, ProjectConfig } from '../utils/fileManager';
+import { FileManager } from '../utils/fileManager';
 import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 import type { CommandResult } from '../utils/commandExecutor';
 
@@ -8,7 +7,9 @@ import type { CommandResult } from '../utils/commandExecutor';
 jest.mock('../utils/fileManager');
 jest.mock('../utils/commandExecutor');
 
-const mockExecuteCommand = jest.fn() as jest.MockedFunction<(...args: any[]) => Promise<CommandResult>>;
+const mockExecuteCommand = jest.fn() as jest.MockedFunction<
+  (...args: unknown[]) => Promise<CommandResult>
+>;
 const mockFileManager = FileManager as jest.MockedClass<typeof FileManager>;
 
 // Get the mocked modules
@@ -21,7 +22,7 @@ describe('CompilerController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockRequest = {
       body: {},
     };
@@ -36,10 +37,9 @@ describe('CompilerController', () => {
     it('should return 400 when code is missing', async () => {
       mockRequest.body = {};
 
-      await (await import('../controllers/compilerController')).CompilerController.compile(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.compile(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -52,10 +52,9 @@ describe('CompilerController', () => {
     it('should return 400 when code is empty string', async () => {
       mockRequest.body = { code: '   ' };
 
-      await (await import('../controllers/compilerController')).CompilerController.compile(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.compile(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -68,10 +67,9 @@ describe('CompilerController', () => {
     it('should return 400 when code is not a string', async () => {
       mockRequest.body = { code: 123 };
 
-      await (await import('../controllers/compilerController')).CompilerController.compile(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.compile(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -92,7 +90,9 @@ describe('CompilerController', () => {
         cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
       };
 
-      mockFileManager.createProject.mockResolvedValue(mockProject as any);
+      mockFileManager.createProject.mockResolvedValue(
+        mockProject as unknown as Awaited<ReturnType<typeof FileManager.createProject>>
+      );
       mockExecuteCommand
         .mockResolvedValueOnce({
           exitCode: 0,
@@ -105,10 +105,9 @@ describe('CompilerController', () => {
           stderr: '',
         });
 
-      await (await import('../controllers/compilerController')).CompilerController.compile(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.compile(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockFileManager.createProject).toHaveBeenCalledWith({
         code,
@@ -116,10 +115,14 @@ describe('CompilerController', () => {
         dependencies: undefined,
       });
 
-      expect(mockExecuteCommand).toHaveBeenCalledWith('cargo', ['build', '--target', 'wasm32-unknown-unknown', '--release'], {
-        cwd: mockProject.projectPath,
-        timeout: 30000,
-      });
+      expect(mockExecuteCommand).toHaveBeenCalledWith(
+        'cargo',
+        ['build', '--target', 'wasm32-unknown-unknown', '--release'],
+        {
+          cwd: mockProject.projectPath,
+          timeout: 30000,
+        }
+      );
 
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -142,17 +145,18 @@ describe('CompilerController', () => {
         cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
       };
 
-      mockFileManager.createProject.mockResolvedValue(mockProject as any);
+      mockFileManager.createProject.mockResolvedValue(
+        mockProject as unknown as Awaited<ReturnType<typeof FileManager.createProject>>
+      );
       mockExecuteCommand.mockResolvedValue({
         exitCode: 1,
         stdout: '',
         stderr: 'Compilation error: expected one of',
       });
 
-      await (await import('../controllers/compilerController')).CompilerController.compile(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.compile(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -177,7 +181,9 @@ describe('CompilerController', () => {
         cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
       };
 
-      mockFileManager.createProject.mockResolvedValue(mockProject as any);
+      mockFileManager.createProject.mockResolvedValue(
+        mockProject as unknown as Awaited<ReturnType<typeof FileManager.createProject>>
+      );
       mockExecuteCommand
         .mockResolvedValueOnce({
           exitCode: 0,
@@ -186,10 +192,9 @@ describe('CompilerController', () => {
         })
         .mockRejectedValueOnce(new Error('stellar command not found'));
 
-      await (await import('../controllers/compilerController')).CompilerController.compile(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.compile(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -213,8 +218,10 @@ describe('CompilerController', () => {
         cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
       };
 
-      mockFileManager.createProject.mockResolvedValue(mockProject as any);
-      
+      mockFileManager.createProject.mockResolvedValue(
+        mockProject as unknown as Awaited<ReturnType<typeof FileManager.createProject>>
+      );
+
       // Create a mock timeout error that will pass the instanceof check
       const timeoutError = Object.create(Error.prototype);
       timeoutError.name = 'CommandTimeoutError';
@@ -222,10 +229,9 @@ describe('CompilerController', () => {
       Object.setPrototypeOf(timeoutError, Error.prototype);
       mockExecuteCommand.mockRejectedValue(timeoutError);
 
-      await (await import('../controllers/compilerController')).CompilerController.compile(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.compile(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(408);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -249,13 +255,14 @@ describe('CompilerController', () => {
         cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
       };
 
-      mockFileManager.createProject.mockResolvedValue(mockProject as any);
+      mockFileManager.createProject.mockResolvedValue(
+        mockProject as unknown as Awaited<ReturnType<typeof FileManager.createProject>>
+      );
       mockExecuteCommand.mockRejectedValue(new Error('Unexpected error'));
 
-      await (await import('../controllers/compilerController')).CompilerController.compile(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.compile(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -273,10 +280,9 @@ describe('CompilerController', () => {
     it('should return 400 when code is missing', async () => {
       mockRequest.body = {};
 
-      await (await import('../controllers/compilerController')).CompilerController.test(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.test(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -289,10 +295,9 @@ describe('CompilerController', () => {
     it('should return 400 when code is empty string', async () => {
       mockRequest.body = { code: '   ' };
 
-      await (await import('../controllers/compilerController')).CompilerController.test(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.test(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -305,10 +310,9 @@ describe('CompilerController', () => {
     it('should return 400 when code is not a string', async () => {
       mockRequest.body = { code: 123 };
 
-      await (await import('../controllers/compilerController')).CompilerController.test(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.test(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -329,17 +333,18 @@ describe('CompilerController', () => {
         cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
       };
 
-      mockFileManager.createProject.mockResolvedValue(mockProject as any);
+      mockFileManager.createProject.mockResolvedValue(
+        mockProject as unknown as Awaited<ReturnType<typeof FileManager.createProject>>
+      );
       mockExecuteCommand.mockResolvedValue({
         exitCode: 0,
         stdout: 'test result: ok. 1 passed; 0 failed',
         stderr: '',
       });
 
-      await (await import('../controllers/compilerController')).CompilerController.test(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.test(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockFileManager.createProject).toHaveBeenCalledWith({
         code,
@@ -373,17 +378,18 @@ describe('CompilerController', () => {
         cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
       };
 
-      mockFileManager.createProject.mockResolvedValue(mockProject as any);
+      mockFileManager.createProject.mockResolvedValue(
+        mockProject as unknown as Awaited<ReturnType<typeof FileManager.createProject>>
+      );
       mockExecuteCommand.mockResolvedValue({
         exitCode: 1,
         stdout: '',
         stderr: 'test result: FAILED. 0 passed; 1 failed',
       });
 
-      await (await import('../controllers/compilerController')).CompilerController.test(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.test(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -408,8 +414,10 @@ describe('CompilerController', () => {
         cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
       };
 
-      mockFileManager.createProject.mockResolvedValue(mockProject as any);
-      
+      mockFileManager.createProject.mockResolvedValue(
+        mockProject as unknown as Awaited<ReturnType<typeof FileManager.createProject>>
+      );
+
       // Create a mock timeout error that will pass the instanceof check
       const timeoutError = Object.create(Error.prototype);
       timeoutError.name = 'CommandTimeoutError';
@@ -417,10 +425,9 @@ describe('CompilerController', () => {
       Object.setPrototypeOf(timeoutError, Error.prototype);
       mockExecuteCommand.mockRejectedValue(timeoutError);
 
-      await (await import('../controllers/compilerController')).CompilerController.test(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.test(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(408);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -444,13 +451,14 @@ describe('CompilerController', () => {
         cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
       };
 
-      mockFileManager.createProject.mockResolvedValue(mockProject as any);
+      mockFileManager.createProject.mockResolvedValue(
+        mockProject as unknown as Awaited<ReturnType<typeof FileManager.createProject>>
+      );
       mockExecuteCommand.mockRejectedValue(new Error('Unexpected error'));
 
-      await (await import('../controllers/compilerController')).CompilerController.test(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.test(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -483,10 +491,9 @@ describe('CompilerController', () => {
           stderr: '',
         });
 
-      await (await import('../controllers/compilerController')).CompilerController.health(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.health(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -515,10 +522,9 @@ describe('CompilerController', () => {
         })
         .mockRejectedValueOnce(new Error('stellar command not found'));
 
-      await (await import('../controllers/compilerController')).CompilerController.health(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.health(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(503);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -536,10 +542,9 @@ describe('CompilerController', () => {
     it('should return 503 when health check fails', async () => {
       mockExecuteCommand.mockRejectedValue(new Error('Health check failed'));
 
-      await (await import('../controllers/compilerController')).CompilerController.health(
-        mockRequest as ExpressRequest,
-        mockResponse as ExpressResponse
-      );
+      await (
+        await import('../controllers/compilerController')
+      ).CompilerController.health(mockRequest as ExpressRequest, mockResponse as ExpressResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(503);
       expect(mockResponse.json).toHaveBeenCalledWith({
