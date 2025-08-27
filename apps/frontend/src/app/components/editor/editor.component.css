@@ -1,8 +1,4 @@
 /* Monaco Editor Deep Styling */
-:host ::ng-deep .monaco-editor {
-  padding-top: 10px;
-}
-
 :host ::ng-deep .monaco-editor .margin {
   background-color: #1f2937;
 }
