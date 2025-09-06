@@ -94,6 +94,8 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
 /* Code syntax highlighting enhancements */
 .code-highlight {
   @apply font-mono text-sm leading-relaxed;
