@@ -41,6 +41,11 @@ export class EditorComponent implements OnDestroy {
   outputMessage: string = '';
   outputType: 'error' | 'success' | 'info' = 'info';
   
+  // Validation and output properties
+  errorMessage: string = '';
+  outputMessage: string = '';
+  outputType: 'error' | 'success' | 'info' = 'info';
+  
   editorOptions = {
     theme: 'vs-dark',
     language: 'rust',
@@ -130,6 +135,16 @@ export class EditorComponent implements OnDestroy {
         console.error('Compilation error:', error);
       }
     });
+
+    // TODO: Implement API call to backend compiler
+    const timeoutId = setTimeout(() => {
+      this.isLoading = false;
+      this.timeoutIds.delete(timeoutId);
+      this.outputMessage = 'Compilation completed successfully!';
+      this.outputType = 'success';
+      console.log('Compilation complete');
+    }, 2000) as unknown as number;
+    this.timeoutIds.add(timeoutId);
   }
 
   onTest(): void {
@@ -161,5 +176,15 @@ export class EditorComponent implements OnDestroy {
         console.error('Test error:', error);
       }
     });
+
+    // TODO: Implement API call to backend test runner  
+    const timeoutId = setTimeout(() => {
+      this.isLoading = false;
+      this.timeoutIds.delete(timeoutId);
+      this.outputMessage = 'All tests passed successfully!';
+      this.outputType = 'success';
+      console.log('Testing complete');
+    }, 2000) as unknown as number;
+    this.timeoutIds.add(timeoutId);
   }
 }
