@@ -41,11 +41,6 @@ export class EditorComponent implements OnDestroy {
   outputMessage: string = '';
   outputType: 'error' | 'success' | 'info' = 'info';
   
-  // Validation and output properties
-  errorMessage: string = '';
-  outputMessage: string = '';
-  outputType: 'error' | 'success' | 'info' = 'info';
-  
   editorOptions = {
     theme: 'vs-dark',
     language: 'rust',
