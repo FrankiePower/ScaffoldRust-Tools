@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorModule } from '@materia-ui/ngx-monaco-editor';
 import { PLATFORM_ID, inject } from '@angular/core';
+import { CompilerService } from '../../services/compiler';
 
 
 const DEFAULT_RUST_CODE = `// Welcome to Soroban Smart Contract Editor
@@ -33,6 +34,7 @@ export class EditorComponent implements OnDestroy {
   private timeoutIds = new Set<number>();
   isLoading = false;
   isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private compilerService = inject(CompilerService);
   
   // Validation and output properties
   errorMessage: string = '';
@@ -114,6 +116,21 @@ export class EditorComponent implements OnDestroy {
     this.outputType = 'info';
     console.log('Compiling Rust smart contract code:', this.code);
     
+    this.compilerService.compile(this.code).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.outputMessage = 'Compilation completed successfully!';
+        this.outputType = 'success';
+        console.log('Compilation response:', response);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = 'Compilation failed: ' + (error.message || error);
+        this.outputType = 'error';
+        console.error('Compilation error:', error);
+      }
+    });
+
     // TODO: Implement API call to backend compiler
     const timeoutId = setTimeout(() => {
       this.isLoading = false;
@@ -140,6 +157,21 @@ export class EditorComponent implements OnDestroy {
     this.outputType = 'info';
     console.log('Testing Rust smart contract code:', this.code);
     
+    this.compilerService.test(this.code).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.outputMessage = 'All tests passed successfully!';
+        this.outputType = 'success';
+        console.log('Test response:', response);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = 'Tests failed: ' + (error.message || error);
+        this.outputType = 'error';
+        console.error('Test error:', error);
+      }
+    });
+
     // TODO: Implement API call to backend test runner  
     const timeoutId = setTimeout(() => {
       this.isLoading = false;
