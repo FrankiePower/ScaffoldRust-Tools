@@ -1,0 +1,32 @@
+.output-container {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.output-error {
+  background-color: #fee2e2;
+  border-left: 4px solid #dc2626;
+  color: #dc2626;
+}
+
+.output-success {
+  background-color: #dcfce7;
+  border-left: 4px solid #16a34a;
+  color: #16a34a;
+}
+
+.output-info {
+  background-color: #dbeafe;
+  border-left: 4px solid #2563eb;
+  color: #2563eb;
+}
+
+.output-text {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin: 0;
+  overflow-x: auto;
+}

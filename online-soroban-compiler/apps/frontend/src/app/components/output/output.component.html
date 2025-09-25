@@ -1,0 +1,7 @@
+<div class="output-container" [ngClass]="{
+  'output-error': outputType === 'error',
+  'output-success': outputType === 'success',
+  'output-info': outputType === 'info'
+}">
+  <pre class="output-text">{{ outputText }}</pre>
+</div>
