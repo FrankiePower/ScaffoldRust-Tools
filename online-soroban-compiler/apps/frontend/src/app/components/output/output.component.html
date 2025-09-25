@@ -1,0 +1,7 @@
+<div class="output-container bg-gray-100 border border-gray-300 rounded-lg p-4 max-h-96 overflow-y-auto">
+  <pre class="whitespace-pre-wrap text-sm font-mono leading-relaxed"
+       [class.text-red-600]="outputType === 'error'"
+       [class.text-green-600]="outputType === 'success'"
+       [class.text-blue-600]="outputType === 'info'"
+       [attr.aria-label]="'Output display: ' + outputType">{{ outputText || 'No output to display' }}</pre>
+</div>

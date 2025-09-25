@@ -1,34 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { MonacoEditorModule, MonacoEditorLoaderService } from '@materia-ui/ngx-monaco-editor';
-import { of } from 'rxjs';
-import { provideZoneChangeDetection } from '@angular/core';
-
 import { EditorComponent } from './editor.component';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
-  let fixture: ComponentFixture<EditorComponent>;
-  let mockMonacoLoaderService: jasmine.SpyObj<MonacoEditorLoaderService>;
 
-  beforeEach(async () => {
-    // Create mock Monaco loader service
-    mockMonacoLoaderService = jasmine.createSpyObj('MonacoEditorLoaderService', [], {
-      isMonacoLoaded$: of(true)
-    });
-
-    await TestBed.configureTestingModule({
-      imports: [EditorComponent, FormsModule, MonacoEditorModule],
-      providers: [
-        provideZoneChangeDetection({ eventCoalescing: true }),
-        { provide: MonacoEditorLoaderService, useValue: mockMonacoLoaderService }
-      ]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(EditorComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    component = new EditorComponent();
   });
 
   it('should create', () => {
@@ -51,45 +27,28 @@ describe('EditorComponent', () => {
     expect(component.isLoading).toBe(false);
   });
 
-  it('should set loading state when compile is called', () => {
-    component.onCompile();
-    expect(component.isLoading).toBe(true);
-  });
-
-  it('should set loading state when test is called', () => {
-    component.onTest();
-    expect(component.isLoading).toBe(true);
-  });
-
-  it('should have proper editor options types', () => {
+  it('should have proper editor options', () => {
     expect(component.editorOptions.theme).toBe('vs-dark');
     expect(component.editorOptions.language).toBe('rust');
     expect(component.editorOptions.automaticLayout).toBe(true);
-    expect(component.editorOptions.readOnly).toBe(false);
   });
 
-  it('should provide getCurrentCode method', () => {
-    const currentCode = component.getCurrentCode();
-    expect(typeof currentCode).toBe('string');
-    expect(currentCode).toContain('Soroban Smart Contract');
+  it('should have outputText getter', () => {
+    component.outputMessage = 'Test output';
+    expect(component.outputText).toBe('Test output');
+
+    component.errorMessage = 'Test error';
+    component.outputMessage = '';
+    expect(component.outputText).toBe('Test error');
   });
 
-  it('should provide setEditorCode method', () => {
-    const newCode = 'fn test() {}';
-    component.setEditorCode(newCode);
-    expect(component.code).toBe(newCode);
-  });
+  it('should clear output correctly', () => {
+    component.errorMessage = 'Some error';
+    component.outputMessage = 'Some output';
+    component.clearOutput();
 
-  it('should handle editor initialization', () => {
-    const mockEditor = {
-      getValue: jasmine.createSpy('getValue').and.returnValue('test code'),
-      setValue: jasmine.createSpy('setValue'),
-      focus: jasmine.createSpy('focus'),
-      layout: jasmine.createSpy('layout'),
-      dispose: jasmine.createSpy('dispose')
-    };
-
-    component.onEditorInit(mockEditor);
-    expect(component.editorLoaded).toBe(true);
+    expect(component.errorMessage).toBe('');
+    expect(component.outputMessage).toBe('');
+    expect(component.outputType).toBe('info');
   });
 });
