@@ -3,7 +3,7 @@ import React from "react";
 /**
  * DiagramRenderer Component
  * Mock component for rendering interactive diagrams in visual mode
- * 
+ *
  * Features:
  * - Placeholder diagram visualization
  * - Interactive preview mockup
@@ -27,17 +27,16 @@ const DiagramRenderer = ({ isVisible = true }) => {
           </span>
         </div>
 
-        {/* Mock Diagram Area */}
         <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-8 min-h-[200px] flex flex-col items-center justify-center">
           <div className="text-6xl mb-4">🎨</div>
           <h4 className="text-xl font-medium text-gray-700 mb-2">
             Interactive Diagram Preview
           </h4>
           <p className="text-gray-600 text-center max-w-md">
-            This is where interactive diagrams, flowcharts, and visual prototypes will be rendered when you share your project ideas.
+            This is where interactive diagrams, flowcharts, and visual
+            prototypes will be rendered when you share your project ideas.
           </p>
-          
-          {/* Mock Diagram Elements */}
+
           <div className="mt-6 flex gap-4">
             <div className="w-16 h-16 bg-blue-200 rounded-lg flex items-center justify-center">
               <span className="text-2xl">📦</span>
