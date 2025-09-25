@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+export type OutputType = 'error' | 'success' | 'info';
+
 @Component({
   selector: 'app-output',
   standalone: true,
@@ -10,4 +12,5 @@ import { CommonModule } from '@angular/common';
 })
 export class OutputComponent {
   @Input() outputText: string = '';
+  @Input() outputType: OutputType = 'info';
 }
