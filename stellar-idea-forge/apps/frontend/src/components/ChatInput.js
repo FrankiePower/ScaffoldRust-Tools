@@ -16,7 +16,6 @@ const ChatInput = ({
   const textareaRef = useRef(null);
   const emojiPickerRef = useRef(null);
 
-  // Close emoji picker when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
