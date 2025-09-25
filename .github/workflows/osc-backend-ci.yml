@@ -4,12 +4,12 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'apps/backend/**'
+      - 'online-soroban-compiler/apps/backend/**'
       - '.github/workflows/backend-ci.yml'
   pull_request:
     branches: [ main ]
     paths:
-      - 'apps/backend/**'
+      - 'online-soroban-compiler/apps/backend/**'
       - '.github/workflows/backend-ci.yml'
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./apps/backend
+        working-directory: ./online-soroban-compiler/apps/backend
 
     steps:
     - uses: actions/checkout@v4

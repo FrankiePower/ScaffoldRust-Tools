@@ -4,12 +4,12 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'apps/frontend/**'
+      - 'online-soroban-compiler/apps/frontend/**'
       - '.github/workflows/angular-ci.yml'
   pull_request:
     branches: [ main ]
     paths:
-      - 'apps/frontend/**'
+      - 'online-soroban-compiler/apps/frontend/**'
       - '.github/workflows/angular-ci.yml'
   workflow_dispatch:
 
@@ -32,13 +32,13 @@ jobs:
         bun-version: 1.2.19
 
     - name: Install dependencies with Bun
-      working-directory: ./apps/frontend
+      working-directory: ./online-soroban-compiler/apps/frontend
       run: bun install
 
     - name: Build Angular App
-      working-directory: ./apps/frontend
+      working-directory: ./online-soroban-compiler/apps/frontend
       run: bun x ng build
 
     - name: Lint Angular App
-      working-directory: ./apps/frontend
+      working-directory: ./online-soroban-compiler/apps/frontend
       run: bun run lint
