@@ -10,5 +10,4 @@ import { CommonModule } from '@angular/common';
 })
 export class OutputComponent {
   @Input() outputText: string = '';
-  @Input() outputType: 'error' | 'success' | 'info' = 'info';
 }
