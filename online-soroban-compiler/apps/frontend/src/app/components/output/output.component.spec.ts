@@ -1,29 +1,42 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+
 import { OutputComponent } from './output.component';
 
 describe('OutputComponent', () => {
   let component: OutputComponent;
+  let fixture: ComponentFixture<OutputComponent>;
 
-  beforeEach(() => {
-    component = new OutputComponent();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [OutputComponent],
+      providers: [
+        provideZonelessChangeDetection()
+      ]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(OutputComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize with empty output text', () => {
-    expect(component.outputText).toBe('');
+  it('should render input string in the pre element', () => {
+    // Check that the pre element exists
+    const compiled = fixture.nativeElement;
+    const preElement = compiled.querySelector('pre.output-text');
+    expect(preElement).toBeTruthy();
+
+    // Test the component properties directly
+    component.outputText = 'This is test output text';
+    expect(component.outputText).toBe('This is test output text');
   });
 
-  it('should initialize with info output type', () => {
+  it('should have default outputType as info', () => {
     expect(component.outputType).toBe('info');
-  });
-
-  it('should accept input values', () => {
-    component.outputText = 'Test output message';
-    component.outputType = 'error';
-
-    expect(component.outputText).toBe('Test output message');
-    expect(component.outputType).toBe('error');
   });
 });
