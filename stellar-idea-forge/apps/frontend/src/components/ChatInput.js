@@ -139,13 +139,11 @@ const ChatInput = ({
 
       setInputValue(newValue);
 
-      // Trigger onChange event
       const syntheticEvent = {
         target: { value: newValue },
       };
       handleChange(syntheticEvent);
 
-      // Focus back to textarea and set cursor position
       setTimeout(() => {
         textarea.focus();
         textarea.setSelectionRange(start + emoji.length, start + emoji.length);
@@ -154,7 +152,6 @@ const ChatInput = ({
     setShowEmojiPicker(false);
   };
   const handleKeyDown = (e) => {
-    // Handle Ctrl+Enter or Cmd+Enter to submit
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
       e.preventDefault();
       if (onSubmit) {
