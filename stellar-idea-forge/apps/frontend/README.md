@@ -1,1 +1,0 @@
-# Frontend - Stellar Idea Forge
