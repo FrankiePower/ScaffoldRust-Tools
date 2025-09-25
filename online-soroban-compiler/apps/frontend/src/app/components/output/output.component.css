@@ -1,0 +1,24 @@
+.output-container {
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+
+.output-container:hover {
+  @apply shadow-sm border-gray-400;
+}
+
+/* Ensure proper scrolling for long outputs */
+.output-container pre {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Loading state indicator if needed */
+.output-container.loading {
+  @apply opacity-75;
+}
+
+/* Accessibility improvements */
+.output-container:focus-within {
+  @apply ring-2 ring-blue-500 ring-opacity-50;
+}

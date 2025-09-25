@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MonacoEditorModule } from '@materia-ui/ngx-monaco-editor';
 import { PLATFORM_ID, inject } from '@angular/core';
 import { CompilerService } from '../../services/compiler';
+import { OutputComponent, OutputType } from '../output/output.component';
 
 
 const DEFAULT_RUST_CODE = `// Welcome to Soroban Smart Contract Editor
@@ -25,7 +26,7 @@ impl HelloContract {
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, MonacoEditorModule],
+  imports: [CommonModule, FormsModule, MonacoEditorModule, OutputComponent],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.css'
 })
@@ -39,7 +40,7 @@ export class EditorComponent implements OnDestroy {
   // Validation and output properties
   errorMessage: string = '';
   outputMessage: string = '';
-  outputType: 'error' | 'success' | 'info' = 'info';
+  outputType: OutputType = 'info';
   
   editorOptions = {
     theme: 'vs-dark',
@@ -51,6 +52,11 @@ export class EditorComponent implements OnDestroy {
     scrollBeyondLastLine: false,
     lineNumbers: 'on' as const
   };
+
+  // Computed property for output text
+  get outputText(): string {
+    return this.errorMessage || this.outputMessage;
+  }
 
   ngOnDestroy(): void {
     this.timeoutIds.forEach(id => clearTimeout(id));
