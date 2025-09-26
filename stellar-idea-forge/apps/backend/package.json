@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:e2e": "cd ../.. && cypress run",
     "test:e2e:open": "cd ../.. && cypress open",
-
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
@@ -16,13 +14,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.58.0",
     "dotenv": "^17.2.2",
     "express": "^5.1.0"
   },
   "devDependencies": {
-
     "cypress": "^15.3.0",
-
     "nodemon": "^3.1.10"
   }
 }
