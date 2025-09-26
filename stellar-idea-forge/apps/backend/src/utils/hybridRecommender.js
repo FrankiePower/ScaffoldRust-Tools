@@ -58,16 +58,23 @@ function calculateHybridScore(allText, keywords) {
     let scalabilityScore = 0;
     let costScore = 0;
     let userExperienceScore = 0;
+
+    const lowerKeywords = Array.isArray(keywords)
+        ? keywords.map(k => String(k).toLowerCase())
+        : [];
+
+    const matches = (token) =>
+        allText.includes(token) || lowerKeywords.some(k => k.includes(token));
     
     // Off-chain indicators (favor hybrid over full on-chain)
     const offChainKeywords = [
-        'consultas frecuentes', 'datos grandes', 'big data', 'analytics',
+        'consultas frecuentes', 'frequent queries', 'datos grandes', 'big data', 'analytics',
         'users', 'usuarios', 'mobile', 'móvil', 'app', 'aplicación',
-        'real-time', 'tiempo real', 'chat', 'messaging', 'notificaciones'
+        'real-time', 'tiempo real', 'chat', 'messaging', 'message', 'notificaciones', 'notification'
     ];
     
     offChainKeywords.forEach(keyword => {
-        if (allText.includes(keyword)) {
+        if (matches(keyword)) {
             offChainIndicators++;
             scalabilityScore += 1;
         }
@@ -80,7 +87,7 @@ function calculateHybridScore(allText, keywords) {
     ];
     
     performanceKeywords.forEach(keyword => {
-        if (allText.includes(keyword)) {
+        if (matches(keyword)) {
             performanceScore += 2;
         }
     });
@@ -92,7 +99,7 @@ function calculateHybridScore(allText, keywords) {
     ];
     
     costKeywords.forEach(keyword => {
-        if (allText.includes(keyword)) {
+        if (matches(keyword)) {
             costScore += 2;
         }
     });
@@ -104,7 +111,7 @@ function calculateHybridScore(allText, keywords) {
     ];
     
     uxKeywords.forEach(keyword => {
-        if (allText.includes(keyword)) {
+        if (matches(keyword)) {
             userExperienceScore += 1;
         }
     });
@@ -132,43 +139,50 @@ function calculateHybridScore(allText, keywords) {
  */
 function generateReasons(allText, keywords, scores) {
     const reasons = [];
+
+    const lowerKeywords = Array.isArray(keywords)
+        ? keywords.map(k => String(k).toLowerCase())
+        : [];
+
+    const matches = (token) =>
+        allText.includes(token) || lowerKeywords.some(k => k.includes(token));
     
     // High off-chain indicators
     if (scores.offChainIndicators >= 2) {
-        reasons.push("💾 Ideal para datos frecuentes y consultas rápidas (5ms) 💨");
+        reasons.push("💾 Ideal for frequent data and fast queries (5ms) 💨");
     }
     
     // Performance focused
     if (scores.performance >= 6) {
-        reasons.push("⚡ Arquitectura híbrida optimizada para velocidad máxima");
+        reasons.push("⚡ Hybrid architecture optimized for speed");
     }
     
     // Cost efficiency
     if (scores.cost >= 4) {
-        reasons.push("💰 Reduce costos usando off-chain para operaciones frecuentes");
+        reasons.push("💰 Lower costs by handling frequent ops off-chain");
     }
     
     // User experience
     if (scores.userExperience >= 3) {
-        reasons.push("👥 Mejor experiencia de usuario con respuesta instantánea");
+        reasons.push("👥 Better user experience with instant response");
     }
     
     // Scalability
     if (scores.scalability >= 5) {
-        reasons.push("🚀 Escalabilidad superior combinando Supabase + Stellar");
+        reasons.push("🚀 Superior scalability combining Supabase + Stellar");
     }
     
     // Payments specific
-    if (allText.includes('pago') || allText.includes('payment') || allText.includes('remesas')) {
-        reasons.push("💳 Óptimo para pagos: off-chain rápido, on-chain seguro");
+    if (matches('pago') || matches('payment') || matches('remesas')) {
+        reasons.push("💳 Great for payments/remesas: off-chain speed, on-chain security");
     }
     
-    // Default reasons if none match
+    // Default reasons if none match (English to align with tests)
     if (reasons.length === 0) {
         reasons.push(
-            "🔄 Híbrido ofrece balance perfecto performance-seguridad",
-            "⚡ Supabase para velocidad + Stellar para confianza",
-            "💎 Mejor de ambos mundos: rápido y descentralizado"
+            "🔄 Hybrid approach provides optimal balance",
+            "🛡️ Maintains security while improving scalability",
+            "⚡ Better performance for end-user applications"
         );
     }
     
@@ -197,6 +211,13 @@ function determineViability(scores) {
  */
 function generateSupabaseSchema(allText, keywords) {
     const tables = [];
+
+    const lowerKeywords = Array.isArray(keywords)
+        ? keywords.map(k => String(k).toLowerCase())
+        : [];
+
+    const matches = (token) =>
+        allText.includes(token) || lowerKeywords.some(k => k.includes(token));
     
     // Always include Users table
     tables.push({
@@ -210,7 +231,7 @@ function generateSupabaseSchema(allText, keywords) {
     });
     
     // Payment/remittance specific tables
-    if (allText.includes('pago') || allText.includes('payment') || allText.includes('remesas')) {
+    if (matches('pago') || matches('payment') || matches('remesas')) {
         tables.push({
             name: "transactions",
             columns: [
@@ -226,7 +247,7 @@ function generateSupabaseSchema(allText, keywords) {
     }
     
     // Marketplace specific tables
-    if (allText.includes('marketplace') || allText.includes('commerce') || allText.includes('tienda')) {
+    if (matches('marketplace') || matches('commerce') || matches('tienda')) {
         tables.push({
             name: "products",
             columns: [
@@ -241,7 +262,7 @@ function generateSupabaseSchema(allText, keywords) {
     }
     
     // Chat/messaging specific tables
-    if (allText.includes('chat') || allText.includes('message') || allText.includes('notification')) {
+    if (matches('chat') || matches('messaging') || matches('message') || matches('notifications') || matches('notification')) {
         tables.push({
             name: "messages",
             columns: [
@@ -255,7 +276,7 @@ function generateSupabaseSchema(allText, keywords) {
     }
     
     // Analytics/data specific tables
-    if (allText.includes('analytic') || allText.includes('data') || allText.includes('metric')) {
+    if (matches('analytic') || matches('analytics') || matches('data') || matches('metric') || matches('metrics')) {
         tables.push({
             name: "analytics_events",
             columns: [
@@ -296,9 +317,8 @@ function generateDefaultRecommendation() {
     return {
         model: "hybrid",
         reasons: [
-            "🔄 Híbrido recomendado por defecto para balance óptimo",
-            "⚡ Supabase para velocidad + Stellar para seguridad",
-            "💎 Mejor experiencia usuario con descentralización"
+            "🔄 Default hybrid approach recommended",
+            "⚡ Balanced performance and decentralization"
         ],
         viability: "Alta 🚀",
         score: {
