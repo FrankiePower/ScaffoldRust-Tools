@@ -64,3 +64,4 @@ function detectAndSuggest(parsedIdea) {
 }
 
 module.exports = { detectAndSuggest };
+-
