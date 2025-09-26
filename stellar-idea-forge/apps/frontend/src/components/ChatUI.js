@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import ChatInput from "./ChatInput";
-import VisualModeToggle from "./VisualModeToggle";
-import DiagramRenderer from "./DiagramRenderer";
-import SupabaseSchemaPreview from "./SupabaseSchemaPreview";
+import React, { useState } from 'react';
+
+import ChatInput from './ChatInput';
+import VisualModeToggle from './VisualModeToggle';
+import DiagramRenderer from './DiagramRenderer';
+import SupabaseSchemaPreview from './SupabaseSchemaPreview';
 
 /**
  * ChatUI Component
@@ -17,18 +18,18 @@ import SupabaseSchemaPreview from "./SupabaseSchemaPreview";
 const ChatUI = () => {
   const [isVisualMode, setIsVisualMode] = useState(false);
 
-  const handleInputChange = (e) => {
-    console.log("ChatUI received input change:", e.target.value);
+  const handleInputChange = e => {
+    console.log('ChatUI received input change:', e.target.value);
   };
 
-  const handleInputSubmit = (e) => {
-    const inputValue = e.target.querySelector("textarea").value;
-    console.log("ChatUI received input submit:", inputValue);
+  const handleInputSubmit = e => {
+    const inputValue = e.target.querySelector('textarea').value;
+    console.log('ChatUI received input submit:', inputValue);
   };
 
-  const handleVisualModeToggle = (visualMode) => {
+  const handleVisualModeToggle = visualMode => {
     setIsVisualMode(visualMode);
-    console.log("ChatUI visual mode changed:", visualMode ? "VISUAL" : "TEXT");
+    console.log('ChatUI visual mode changed:', visualMode ? 'VISUAL' : 'TEXT');
   };
 
   return (
@@ -56,8 +57,8 @@ const ChatUI = () => {
           onSubmit={handleInputSubmit}
           placeholder={
             isVisualMode
-              ? "Describe your visual idea and see it come to life... 🎨✨"
-              : "Share your stellar project idea here... 🌟✨"
+              ? 'Describe your visual idea and see it come to life... 🎨✨'
+              : 'Share your stellar project idea here... 🌟✨'
           }
         />
       </div>
