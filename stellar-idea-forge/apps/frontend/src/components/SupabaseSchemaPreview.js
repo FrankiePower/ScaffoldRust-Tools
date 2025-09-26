@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 /**
  * SupabaseSchemaPreview Component
@@ -15,22 +15,22 @@ const SupabaseSchemaPreview = ({ isVisible = true }) => {
 
   const mockTables = [
     {
-      name: "users",
-      icon: "👤",
-      fields: ["id", "email", "name", "created_at"],
-      color: "bg-blue-100 border-blue-300",
+      name: 'users',
+      icon: '👤',
+      fields: ['id', 'email', 'name', 'created_at'],
+      color: 'bg-blue-100 border-blue-300',
     },
     {
-      name: "projects",
-      icon: "📁",
-      fields: ["id", "title", "description", "user_id"],
-      color: "bg-green-100 border-green-300",
+      name: 'projects',
+      icon: '📁',
+      fields: ['id', 'title', 'description', 'user_id'],
+      color: 'bg-green-100 border-green-300',
     },
     {
-      name: "ideas",
-      icon: "💡",
-      fields: ["id", "content", "project_id", "status"],
-      color: "bg-yellow-100 border-yellow-300",
+      name: 'ideas',
+      icon: '💡',
+      fields: ['id', 'content', 'project_id', 'status'],
+      color: 'bg-yellow-100 border-yellow-300',
     },
   ];
 
@@ -51,7 +51,7 @@ const SupabaseSchemaPreview = ({ isVisible = true }) => {
         {/* Mock Schema Visualization */}
         <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 min-h-[250px]">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {mockTables.map((table) => (
+            {mockTables.map(table => (
               <div
                 key={table.name}
                 className={`${table.color} border-2 rounded-lg p-4 transition-all hover:shadow-md`}
@@ -69,7 +69,7 @@ const SupabaseSchemaPreview = ({ isVisible = true }) => {
                       key={field}
                       className="text-sm text-gray-700 bg-white bg-opacity-60 px-2 py-1 rounded"
                     >
-                      {fieldIndex === 0 && "🔑 "}
+                      {fieldIndex === 0 && '🔑 '}
                       {field}
                     </div>
                   ))}
