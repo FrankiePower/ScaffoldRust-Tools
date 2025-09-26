@@ -1,0 +1,19 @@
+{
+  "name": "stellar-idea-forge",
+  "version": "1.0.0",
+  "description": "Stellar Idea Forge - A companion tool for Stellar development",
+  "main": "index.js",
+  "scripts": {
+    "test": "cd apps/backend && npm test",
+    "test:watch": "cd apps/backend && npm run test:watch",
+    "test:coverage": "cd apps/backend && npm run test:coverage"
+  },
+  "keywords": [
+    "stellar",
+    "blockchain",
+    "development",
+    "tools"
+  ],
+  "author": "",
+  "license": "ISC"
+}
