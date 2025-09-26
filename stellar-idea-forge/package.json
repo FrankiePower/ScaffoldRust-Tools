@@ -1,7 +1,7 @@
 {
   "name": "stellar-idea-forge",
   "version": "1.0.0",
-  "description": "",
+  "description": "Stellar Idea Forge - A companion tool for Stellar development",
   "main": "index.js",
   "type": "module",
   "directories": {
@@ -9,15 +9,22 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
+    "backend:test": "cd apps/backend && npm test",
+    "backend:test:watch": "cd apps/backend && npm run test:watch",
+    "backend:test:coverage": "cd apps/backend && npm run test:coverage"
   },
-  "keywords": [],
+  "keywords": [
+    "stellar",
+    "blockchain",
+    "development",
+    "tools"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "ISC"
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "eslint": "^9.36.0",
@@ -30,3 +37,4 @@
     "prettier": "^3.6.2"
   }
 }
+
