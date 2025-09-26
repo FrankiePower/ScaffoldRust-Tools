@@ -1,0 +1,29 @@
+{
+  "name": "stellar-idea-forge",
+  "version": "1.0.0",
+  "description": "Stellar Idea Forge - A companion tool for Stellar development",
+  "main": "index.js",
+  "scripts": {
+    "test:e2e": "cypress run",
+    "test:e2e:open": "cypress open",
+    "test:e2e:headless": "cypress run --headless",
+    "dev:frontend": "cd apps/frontend && npm start",
+    "dev:backend": "cd apps/backend && npm run dev",
+    "install:frontend": "cd apps/frontend && npm install",
+    "install:backend": "cd apps/backend && npm install",
+    "install:all": "npm run install:frontend && npm run install:backend"
+  },
+  "keywords": [
+    "stellar",
+    "blockchain",
+    "development",
+    "tools",
+    "e2e",
+    "cypress"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^13.17.0"
+  }
+}
