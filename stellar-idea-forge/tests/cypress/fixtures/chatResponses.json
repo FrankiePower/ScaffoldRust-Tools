@@ -1,0 +1,47 @@
+{
+  "remesasResponse": {
+    "suggestion": "Excellent idea for a remesas application! 💰",
+    "model": "hybrid",
+    "reasons": [
+      "🎯 Hybrid model ideal for remesas applications",
+      "⚡ Fast transaction processing for international transfers",
+      "👥 Enhanced user experience for mobile users"
+    ],
+    "visual": {
+      "diagrams": true,
+      "schemaPreview": true
+    }
+  },
+  "daoResponse": {
+    "suggestion": "Interesting DAO concept! Let me ask a few questions: 🗳️",
+    "model": "full-on-chain",
+    "reasons": [
+      "⛓️ Full on-chain ideal for DAO governance",
+      "🗳️ Voting mechanisms require transparency",
+      "⚠️ Consider potential latency for consensus operations"
+    ],
+    "clarificationQuestions": [
+      "What type of governance decisions will the DAO handle?",
+      "How large is your expected community size?",
+      "Do you need multi-signature treasury features?"
+    ]
+  },
+  "emptyInputResponse": {
+    "suggestion": "Please provide more details about your project idea! 💡",
+    "model": "hybrid",
+    "reasons": [
+      "🤔 Need more information to provide recommendations",
+      "💭 Try describing your blockchain application",
+      "✨ Include key features or target users"
+    ]
+  },
+  "nftResponse": {
+    "suggestion": "Fantastic NFT marketplace concept! 🎨",
+    "model": "full-on-chain",
+    "reasons": [
+      "⛓️ Full on-chain perfect for NFT ownership",
+      "🎨 Digital art requires blockchain verification",
+      "✨ Enhanced visual presentation for collectibles"
+    ]
+  }
+}
