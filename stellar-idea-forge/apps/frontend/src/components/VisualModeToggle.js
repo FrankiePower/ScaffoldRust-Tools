@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 /**
  * VisualModeToggle Component
@@ -20,8 +20,8 @@ const VisualModeToggle = ({ onToggle, isVisualMode = false }) => {
     setVisualMode(newVisualMode);
 
     // Console logging for debugging as required
-    console.log("Visual Mode toggled:", newVisualMode ? "ON" : "OFF");
-    console.log("State change propagated to parent components");
+    console.log('Visual Mode toggled:', newVisualMode ? 'ON' : 'OFF');
+    console.log('State change propagated to parent components');
 
     // Call parent callback if provided
     if (onToggle) {
@@ -43,11 +43,11 @@ const VisualModeToggle = ({ onToggle, isVisualMode = false }) => {
           shadow-md hover:shadow-lg
           ${
             visualMode
-              ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white focus:ring-purple-300"
-              : "bg-gray-100 hover:bg-gray-200 text-gray-700 focus:ring-gray-300"
+              ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white focus:ring-purple-300'
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-700 focus:ring-gray-300'
           }
         `}
-        title={visualMode ? "Switch to Text Mode" : "Switch to Visual Mode"}
+        title={visualMode ? 'Switch to Text Mode' : 'Switch to Visual Mode'}
       >
         {/* Eye Icon - Open/Close SVG */}
         {visualMode ? (
@@ -83,13 +83,13 @@ const VisualModeToggle = ({ onToggle, isVisualMode = false }) => {
         )}
 
         {/* Button Text */}
-        <span>{visualMode ? "Visual Mode" : "Toggle Visual Mode"}</span>
+        <span>{visualMode ? 'Visual Mode' : 'Toggle Visual Mode'}</span>
       </button>
 
       {/* Mode Label */}
       <div className="text-sm text-gray-600">
         <span className="font-medium">
-          {visualMode ? "🎨 Visual Mode Active" : "💬 Text Mode"}
+          {visualMode ? '🎨 Visual Mode Active' : '💬 Text Mode'}
         </span>
       </div>
     </div>
