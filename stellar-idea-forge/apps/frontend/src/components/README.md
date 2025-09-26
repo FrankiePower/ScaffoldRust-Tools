@@ -17,11 +17,11 @@ A modern, responsive React component for chat input functionality with emoji sup
 import ChatInput from './components/ChatInput';
 
 function App() {
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     console.log('Input changed:', e.target.value);
   };
 
-  const handleInputSubmit = (e) => {
+  const handleInputSubmit = e => {
     const inputValue = e.target.querySelector('textarea').value;
     console.log('Input submitted:', inputValue);
     // Clear input after submission
@@ -40,11 +40,11 @@ function App() {
 
 ## Props 📋
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `onChange` | `function` | `undefined` | Callback fired when input value changes |
-| `onSubmit` | `function` | `undefined` | Callback fired when form is submitted |
-| `placeholder` | `string` | `"Type your project idea here... 💡"` | Placeholder text for the input field |
+| Prop          | Type       | Default                               | Description                             |
+| ------------- | ---------- | ------------------------------------- | --------------------------------------- |
+| `onChange`    | `function` | `undefined`                           | Callback fired when input value changes |
+| `onSubmit`    | `function` | `undefined`                           | Callback fired when form is submitted   |
+| `placeholder` | `string`   | `"Type your project idea here... 💡"` | Placeholder text for the input field    |
 
 ## Styling 🎨
 
