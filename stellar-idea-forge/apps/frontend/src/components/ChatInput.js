@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 
 /**
  * ChatInput Component
@@ -9,15 +9,15 @@ import React, { useState, useRef, useEffect } from "react";
 const ChatInput = ({
   onChange,
   onSubmit,
-  placeholder = "Type your project idea here... 💡",
+  placeholder = 'Type your project idea here... 💡',
 }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
   const textareaRef = useRef(null);
   const emojiPickerRef = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (
         emojiPickerRef.current &&
         !emojiPickerRef.current.contains(event.target)
@@ -27,109 +27,109 @@ const ChatInput = ({
     };
 
     if (showEmojiPicker) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showEmojiPicker]);
 
   // Common emojis for quick access
   const commonEmojis = [
-    "😀",
-    "😃",
-    "😄",
-    "😁",
-    "😆",
-    "😅",
-    "😂",
-    "🤣",
-    "😊",
-    "😇",
-    "🙂",
-    "🙃",
-    "😉",
-    "😌",
-    "😍",
-    "🥰",
-    "😘",
-    "😗",
-    "😙",
-    "😚",
-    "😋",
-    "😛",
-    "😝",
-    "😜",
-    "🤪",
-    "🤨",
-    "🧐",
-    "🤓",
-    "😎",
-    "🤩",
-    "🥳",
-    "😏",
-    "😒",
-    "😞",
-    "😔",
-    "😟",
-    "😕",
-    "🙁",
-    "☹️",
-    "😣",
-    "💡",
-    "🚀",
-    "⭐",
-    "✨",
-    "🌟",
-    "💫",
-    "🔥",
-    "💯",
-    "👍",
-    "👎",
-    "👏",
-    "🙌",
-    "👌",
-    "✌️",
-    "🤞",
-    "🤟",
-    "🤘",
-    "🤙",
-    "👈",
-    "👉",
-    "👆",
-    "🖕",
-    "👇",
-    "☝️",
-    "👍",
-    "👎",
-    "👊",
-    "✊",
-    "🤛",
-    "🤜",
-    "❤️",
-    "🧡",
-    "💛",
-    "💚",
-    "💙",
-    "💜",
-    "🖤",
-    "🤍",
-    "🤎",
-    "💔",
-    "❣️",
-    "💕",
-    "💞",
-    "💓",
-    "💗",
-    "💖",
-    "💘",
-    "💝",
-    "💟",
-    "☮️",
+    '😀',
+    '😃',
+    '😄',
+    '😁',
+    '😆',
+    '😅',
+    '😂',
+    '🤣',
+    '😊',
+    '😇',
+    '🙂',
+    '🙃',
+    '😉',
+    '😌',
+    '😍',
+    '🥰',
+    '😘',
+    '😗',
+    '😙',
+    '😚',
+    '😋',
+    '😛',
+    '😝',
+    '😜',
+    '🤪',
+    '🤨',
+    '🧐',
+    '🤓',
+    '😎',
+    '🤩',
+    '🥳',
+    '😏',
+    '😒',
+    '😞',
+    '😔',
+    '😟',
+    '😕',
+    '🙁',
+    '☹️',
+    '😣',
+    '💡',
+    '🚀',
+    '⭐',
+    '✨',
+    '🌟',
+    '💫',
+    '🔥',
+    '💯',
+    '👍',
+    '👎',
+    '👏',
+    '🙌',
+    '👌',
+    '✌️',
+    '🤞',
+    '🤟',
+    '🤘',
+    '🤙',
+    '👈',
+    '👉',
+    '👆',
+    '🖕',
+    '👇',
+    '☝️',
+    '👍',
+    '👎',
+    '👊',
+    '✊',
+    '🤛',
+    '🤜',
+    '❤️',
+    '🧡',
+    '💛',
+    '💚',
+    '💙',
+    '💜',
+    '🖤',
+    '🤍',
+    '🤎',
+    '💔',
+    '❣️',
+    '💕',
+    '💞',
+    '💓',
+    '💗',
+    '💖',
+    '💘',
+    '💝',
+    '💟',
+    '☮️',
   ];
 
-  const insertEmoji = (emoji) => {
+  const insertEmoji = emoji => {
     const textarea = textareaRef.current;
     if (textarea) {
       const start = textarea.selectionStart;
@@ -151,8 +151,8 @@ const ChatInput = ({
     }
     setShowEmojiPicker(false);
   };
-  const handleKeyDown = (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+  const handleKeyDown = e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       if (onSubmit) {
         onSubmit(e);
@@ -160,23 +160,23 @@ const ChatInput = ({
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const value = e.target.value;
     setInputValue(value);
-    console.log("ChatInput onChange:", value);
+    console.log('ChatInput onChange:', value);
     if (onChange) {
       onChange(e);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
-    console.log("ChatInput onSubmit:", inputValue);
+    console.log('ChatInput onSubmit:', inputValue);
     if (onSubmit) {
       onSubmit(e);
     }
     // Clear the input after submit
-    setInputValue("");
+    setInputValue('');
   };
 
   return (

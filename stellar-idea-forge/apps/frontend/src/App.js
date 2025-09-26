@@ -2,6 +2,7 @@ import "./App.css";
 import ChatUI from "./components/ChatUI";
 import SupabaseSchemaPreview from "./components/SupabaseSchemaPreview";
 
+
 function App() {
   // Mock schema data for testing
   const mockSchemaData = [

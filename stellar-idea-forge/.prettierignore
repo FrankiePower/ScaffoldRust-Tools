@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+coverage/
+*.min.js
+apps/frontend/build/
+apps/backend/dist/
+package-lock.json
+.git/
+.DS_Store
+*.md
