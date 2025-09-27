@@ -1,0 +1,231 @@
+{
+  "templateId": "dao-stellar",
+  "name": "DAO (Decentralized Autonomous Organization) Template",
+  "description": "Template for building decentralized autonomous organizations on Stellar network",
+  "ideaKeywords": ["DAO", "dao", "governance", "voting", "proposal", "decentralized", "autonomous", "organization", "community", "token", "democratic", "collective"],
+  "category": "governance",
+  "difficulty": "advanced",
+  "estimatedTime": "4-6 weeks",
+  
+  "defaultQuestions": [
+    "¿Cuál será el propósito principal de tu DAO? 🎯 (inversión, desarrollo, caridad, etc.)",
+    "¿Cómo se obtendrán los tokens de gobernanza? 🎫 (compra, airdrop, mining)",
+    "¿Qué tipo de decisiones votará la comunidad? 🗳️",
+    "¿Implementarás delegación de votos? 🤝",
+    "¿Habrá un token nativo o usarás XLM? 💰",
+    "¿Cuál será el quorum mínimo para propuestas? 📊",
+    "¿Incluirás treasury/tesorería comunitaria? 🏛️",
+    "¿Cómo se ejecutarán las propuestas aprobadas? ⚙️"
+  ],
+  
+  "recommendedModel": "hybrid",
+  "recommendedApproach": "Start with simple voting mechanism, then add treasury and complex governance",
+  
+  "schemaMock": {
+    "tables": [
+      {
+        "name": "dao_members",
+        "displayName": "DAO Members",
+        "description": "Members participating in DAO governance",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "Unique member identifier", "isPrimaryKey": true},
+          {"name": "wallet_address", "type": "TEXT", "description": "Stellar wallet address", "isRequired": true},
+          {"name": "username", "type": "TEXT", "description": "Display name in DAO"},
+          {"name": "email", "type": "TEXT", "description": "Email for notifications"},
+          {"name": "governance_tokens", "type": "DECIMAL(18,7)", "description": "Number of governance tokens held"},
+          {"name": "voting_power", "type": "DECIMAL(18,7)", "description": "Total voting power (including delegated)"},
+          {"name": "delegated_to", "type": "UUID", "description": "Member who votes are delegated to"},
+          {"name": "reputation_score", "type": "INTEGER", "description": "Community reputation points", "defaultValue": 0},
+          {"name": "participation_rate", "type": "DECIMAL(5,2)", "description": "Voting participation percentage"},
+          {"name": "joined_at", "type": "TIMESTAMP", "description": "Date joined DAO"},
+          {"name": "last_activity", "type": "TIMESTAMP", "description": "Last governance activity"},
+          {"name": "is_active", "type": "BOOLEAN", "description": "Active member status", "defaultValue": true}
+        ]
+      },
+      {
+        "name": "proposals",
+        "displayName": "Governance Proposals",
+        "description": "Community governance proposals for voting",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "Unique proposal identifier", "isPrimaryKey": true},
+          {"name": "proposer_id", "type": "UUID", "description": "Member who created proposal", "isRequired": true},
+          {"name": "title", "type": "TEXT", "description": "Proposal title", "isRequired": true},
+          {"name": "description", "type": "TEXT", "description": "Detailed proposal description", "isRequired": true},
+          {"name": "category", "type": "TEXT", "description": "Proposal category (treasury, governance, technical)"},
+          {"name": "voting_type", "type": "TEXT", "description": "Type: simple_majority, supermajority, quadratic"},
+          {"name": "required_quorum", "type": "DECIMAL(5,2)", "description": "Minimum participation required"},
+          {"name": "voting_starts_at", "type": "TIMESTAMP", "description": "Voting period start"},
+          {"name": "voting_ends_at", "type": "TIMESTAMP", "description": "Voting period end"},
+          {"name": "status", "type": "TEXT", "description": "Status: draft, active, passed, rejected, executed", "defaultValue": "draft"},
+          {"name": "votes_for", "type": "DECIMAL(18,7)", "description": "Total votes in favor", "defaultValue": 0},
+          {"name": "votes_against", "type": "DECIMAL(18,7)", "description": "Total votes against", "defaultValue": 0},
+          {"name": "votes_abstain", "type": "DECIMAL(18,7)", "description": "Total abstain votes", "defaultValue": 0},
+          {"name": "execution_payload", "type": "JSONB", "description": "Smart contract execution data"},
+          {"name": "executed_at", "type": "TIMESTAMP", "description": "When proposal was executed"},
+          {"name": "created_at", "type": "TIMESTAMP", "description": "Proposal creation date"}
+        ]
+      },
+      {
+        "name": "votes",
+        "displayName": "Individual Votes",
+        "description": "Individual member votes on proposals",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "Unique vote identifier", "isPrimaryKey": true},
+          {"name": "proposal_id", "type": "UUID", "description": "Proposal being voted on", "isRequired": true},
+          {"name": "member_id", "type": "UUID", "description": "Member casting vote", "isRequired": true},
+          {"name": "vote_choice", "type": "TEXT", "description": "Choice: for, against, abstain", "isRequired": true},
+          {"name": "voting_power_used", "type": "DECIMAL(18,7)", "description": "Amount of voting power used"},
+          {"name": "is_delegated", "type": "BOOLEAN", "description": "Vote cast by delegate", "defaultValue": false},
+          {"name": "delegate_id", "type": "UUID", "description": "Member who cast delegated vote"},
+          {"name": "vote_reason", "type": "TEXT", "description": "Optional reason for vote"},
+          {"name": "cast_at", "type": "TIMESTAMP", "description": "When vote was cast"},
+          {"name": "tx_hash", "type": "TEXT", "description": "Stellar transaction hash for on-chain vote"}
+        ]
+      },
+      {
+        "name": "treasury_transactions",
+        "displayName": "Treasury Transactions",
+        "description": "DAO treasury fund movements",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "Transaction identifier", "isPrimaryKey": true},
+          {"name": "proposal_id", "type": "UUID", "description": "Related proposal (if applicable)"},
+          {"name": "transaction_type", "type": "TEXT", "description": "Type: deposit, withdrawal, transfer, reward"},
+          {"name": "asset", "type": "TEXT", "description": "Asset symbol (XLM, USDC, etc.)", "isRequired": true},
+          {"name": "amount", "type": "DECIMAL(18,7)", "description": "Transaction amount", "isRequired": true},
+          {"name": "from_address", "type": "TEXT", "description": "Source wallet address"},
+          {"name": "to_address", "type": "TEXT", "description": "Destination wallet address"},
+          {"name": "purpose", "type": "TEXT", "description": "Transaction purpose/description"},
+          {"name": "stellar_tx_hash", "type": "TEXT", "description": "Stellar network transaction hash"},
+          {"name": "executed_by", "type": "UUID", "description": "Member who executed (if manual)"},
+          {"name": "status", "type": "TEXT", "description": "Status: pending, completed, failed", "defaultValue": "pending"},
+          {"name": "created_at", "type": "TIMESTAMP", "description": "Transaction creation date"},
+          {"name": "executed_at", "type": "TIMESTAMP", "description": "Execution timestamp"}
+        ]
+      }
+    ],
+    "relationships": [
+      {"from": "proposals", "to": "dao_members", "type": "many-to-one", "foreignKey": "proposer_id"},
+      {"from": "votes", "to": "proposals", "type": "many-to-one", "foreignKey": "proposal_id"},
+      {"from": "votes", "to": "dao_members", "type": "many-to-one", "foreignKey": "member_id"},
+      {"from": "dao_members", "to": "dao_members", "type": "many-to-one", "foreignKey": "delegated_to"},
+      {"from": "treasury_transactions", "to": "proposals", "type": "many-to-one", "foreignKey": "proposal_id"},
+      {"from": "treasury_transactions", "to": "dao_members", "type": "many-to-one", "foreignKey": "executed_by"}
+    ]
+  },
+  
+  "stellarFeatures": [
+    "Multi-signature accounts for treasury management",
+    "Custom governance tokens on Stellar",
+    "Claimable Balances for reward distribution",
+    "Sequence numbers for proposal ordering",
+    "Account flags for membership verification"
+  ],
+  
+  "smartContractSuggestions": [
+    "Governance voting smart contract (Soroban)",
+    "Treasury multi-sig management contract",
+    "Token distribution and vesting contract",
+    "Proposal execution automation",
+    "Delegation and proxy voting system"
+  ],
+  
+  "visualPreview": "flowchart TD\n    A[👥 DAO Members] --> B[🎫 Governance Tokens]\n    B --> C[💡 Create Proposal]\n    C --> D[📋 Community Discussion]\n    D --> E[🗳️ Voting Period]\n    E --> F{Quorum Reached?}\n    F -->|Yes| G[✅ Proposal Passed]\n    F -->|No| H[❌ Proposal Rejected]\n    G --> I[⚙️ Execute Proposal]\n    I --> J[🏛️ Update Treasury/DAO]\n    \n    K[🤝 Vote Delegation] --> L[📊 Weighted Voting]\n    M[💰 Treasury Funds] --> N[💸 Fund Proposals]\n    O[📈 Reputation System] --> P[🎯 Governance Incentives]\n    \n    style A fill:#e3f2fd\n    style G fill:#c8e6c9\n    style I fill:#fff3e0\n    style M fill:#f3e5f5",
+  
+  "codeSnippets": {
+    "createProposal": "// Create new governance proposal\nconst createProposal = async (proposalData) => {\n  const proposal = {\n    id: generateUUID(),\n    title: proposalData.title,\n    description: proposalData.description,\n    proposer_id: proposalData.proposerId,\n    voting_starts_at: new Date(Date.now() + 24*60*60*1000), // 24h delay\n    voting_ends_at: new Date(Date.now() + 7*24*60*60*1000), // 7 days\n    required_quorum: 0.10, // 10% participation\n    status: 'draft'\n  };\n  return await database.proposals.create(proposal);\n};",
+    
+    "castVote": "// Cast vote with Stellar transaction\nconst castVote = async (proposalId, memberId, choice, votingPower) => {\n  // Create vote record\n  const vote = {\n    proposal_id: proposalId,\n    member_id: memberId,\n    vote_choice: choice, // 'for', 'against', 'abstain'\n    voting_power_used: votingPower,\n    cast_at: new Date()\n  };\n  \n  // Optional: Record on Stellar for transparency\n  const memo = `VOTE-${proposalId.slice(0,8)}-${choice.toUpperCase()}`;\n  const transaction = createVotingTransaction(memo);\n  \n  return await database.votes.create(vote);\n};",
+    
+    "treasuryTransfer": "// Execute treasury transfer\nconst executeTreasuryTransfer = async (proposalId, amount, asset, destination) => {\n  const treasuryAccount = await server.loadAccount(TREASURY_PUBLIC_KEY);\n  \n  const transaction = new StellarSdk.TransactionBuilder(treasuryAccount, {\n    fee: StellarSdk.BASE_FEE,\n    networkPassphrase: StellarSdk.Networks.PUBLIC\n  })\n  .addOperation(StellarSdk.Operation.payment({\n    destination: destination,\n    asset: asset,\n    amount: amount.toString()\n  }))\n  .addMemo(StellarSdk.Memo.text(`DAO-TREASURY-${proposalId.slice(0,8)}`))\n  .setTimeout(180)\n  .build();\n  \n  // Multi-signature required\n  return transaction;\n};"
+  },
+  
+  "recommendedLibraries": [
+    "@stellar/stellar-sdk - Core Stellar functionality",
+    "multisig-stellar - Multi-signature account management",
+    "uuid - Unique ID generation for proposals",
+    "moment - Time calculations for voting periods",
+    "lodash - Data manipulation utilities",
+    "joi - Input validation for proposals",
+    "ws - Real-time voting updates"
+  ],
+  
+  "deploymentSteps": [
+    "1. 🔧 Set up Stellar multi-sig treasury account",
+    "2. 🎫 Deploy governance token (or use existing asset)",
+    "3. 🗃️ Initialize database with DAO schema", 
+    "4. 👥 Set up founding member accounts",
+    "5. 📋 Create initial governance proposals",
+    "6. 🗳️ Test voting mechanisms on testnet",
+    "7. ⚙️ Deploy proposal execution automation",
+    "8. 🚀 Launch with founding governance votes"
+  ],
+  
+  "governanceModels": [
+    "Token-weighted voting (1 token = 1 vote)",
+    "Quadratic voting (reduces whale influence)",
+    "Reputation-based voting (based on participation)",
+    "Delegated voting (proxy representatives)",
+    "Time-locked voting (longer locks = more power)"
+  ],
+  
+  "uiElements": {
+    "proposalBrowser": "List of active and past proposals with status indicators",
+    "votingInterface": "Clean voting UI with proposal details and voting power",
+    "treasuryDashboard": "Treasury balance and transaction history",
+    "memberDirectory": "DAO member profiles and delegation options",
+    "governanceStats": "Participation rates, proposal success rates, analytics"
+  },
+  
+  "securityConsiderations": [
+    "Multi-signature requirements for treasury operations",
+    "Time delays for proposal execution",
+    "Quorum thresholds to prevent minority control",
+    "Vote delegation limits and transparency",
+    "Regular security audits of smart contracts"
+  ],
+  
+  "exampleUseCases": [
+    "🏗️ Investment DAO managing community funds",
+    "🌱 Environmental DAO funding green projects",
+    "🎮 Gaming DAO governing game development",
+    "🎓 Education DAO distributing scholarships",
+    "💻 Developer DAO funding open source projects",
+    "🏛️ Protocol DAO managing DeFi parameters"
+  ],
+  
+  "monetizationStrategies": [
+    "Transaction fees on treasury operations",
+    "Premium governance analytics and tools",
+    "DAO-as-a-Service for launching new DAOs",
+    "Integration fees with external protocols",
+    "Governance token value appreciation"
+  ],
+  
+  "complianceNotes": [
+    "Consider securities regulations for governance tokens",
+    "Implement AML/KYC for large treasury operations",
+    "Document decision-making processes for audits",
+    "Ensure transparent financial reporting",
+    "Consider legal entity formation for liability protection"
+  ],
+  
+  "successMetrics": [
+    "👥 Active member participation rate",
+    "🗳️ Average proposal voting turnout",
+    "💰 Treasury growth and utilization",
+    "📊 Proposal success and execution rate",
+    "🎯 Community satisfaction and retention",
+    "🔄 Governance token distribution and decentralization"
+  ],
+  
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-09-27",
+    "compatibility": ["Stellar Mainnet", "Stellar Testnet", "Soroban"],
+    "tags": ["DAO", "Governance", "Voting", "Treasury", "Community", "Decentralized"],
+    "author": "Stellar Idea Forge", 
+    "difficulty": "advanced",
+    "estimatedDevTime": "6-8 weeks",
+    "requiredExpertise": ["Smart Contracts", "Multi-signature", "Governance Design"]
+  }
+}
