@@ -9,12 +9,13 @@ import collaborativeSocket from '../services/collaborativeSocket';
 
 /**
  * ChatUI Component
- * Main chat interface with visual mode toggle functionality and drag & drop controls
+ * Main chat interface with visual mode toggle functionality, drag & drop controls, and collaborative features
  *
  * Features:
  * - Clean integration with ChatInput component
  * - Visual mode toggle for interactive previews
  * - Drag & drop controls for enhanced interactivity
+ * - Collaborative chat functionality with real-time templates
  * - Conditional rendering of visual components
  * - Smooth transitions between text and visual modes
  */
@@ -163,23 +164,24 @@ const ChatUI = () => {
         <div className="space-y-6">
           <DiagramRenderer 
             isVisible={isVisualMode} 
+            mode={isDragDropEnabled ? 'interactive' : 'visual'}
             template={currentTemplate}
             sharedData={sharedVisuals}
           />
-          {currentTemplate && currentTemplate.schemaMock && (
+          
+          {/* Show SupabaseSchemaPreview with template data if available, otherwise show enhanced version */}
+          {currentTemplate && currentTemplate.schemaMock ? (
             <SupabaseSchemaPreview 
               schemaData={currentTemplate.schemaMock.tables}
               template={currentTemplate}
+              enableDragDrop={isDragDropEnabled}
+            />
+          ) : (
+            <SupabaseSchemaPreview 
+              isVisible={isVisualMode} 
+              enableDragDrop={isDragDropEnabled}
             />
           )}
-          <DiagramRenderer 
-            isVisible={isVisualMode} 
-            mode={isDragDropEnabled ? 'interactive' : 'visual'}
-          />
-          <SupabaseSchemaPreview 
-            isVisible={isVisualMode} 
-            enableDragDrop={isDragDropEnabled}
-          />
         </div>
       )}
 
@@ -192,11 +194,11 @@ const ChatUI = () => {
           placeholder={
             collaborativeSocket.getStatus().currentRoom
               ? isVisualMode
-                ? 'Comparte tu idea visual con el equipo... 🎨✨🤝'
+                ? isDragDropEnabled
+                  ? 'Colabora y arrastra campos entre tablas en tiempo real... 🎨🎯🤝'
+                  : 'Comparte tu idea visual con el equipo... 🎨✨🤝'
                 : 'Colabora en tiempo real con tu equipo... 🌟✨🤝'
               : isVisualMode
-              ? 'Describe your visual idea and see it come to life... 🎨✨'
-            isVisualMode
               ? isDragDropEnabled
                 ? 'Describe your schema and drag fields between tables... 🎨🎯'
                 : 'Describe your visual idea and see it come to life... 🎨✨'
@@ -213,28 +215,38 @@ const ChatUI = () => {
               🎨 Visual Mode Active
             </h3>
             <p className="text-gray-600 text-sm mb-3">
-              {isDragDropEnabled 
-                ? "Interactive diagrams are ready! Expand tables and drag fields around."
-                : "Visual preview mode - toggle interactive mode above to enable drag & drop."
+              {collaborativeSocket.getStatus().currentRoom && currentTemplate
+                ? `Collaborating on "${currentTemplate.name}" template. ${isDragDropEnabled ? 'Drag & drop enabled!' : 'Enable interactive mode for drag & drop.'}`
+                : isDragDropEnabled 
+                  ? "Interactive diagrams are ready! Expand tables and drag fields around."
+                  : "Visual preview mode - toggle interactive mode above to enable drag & drop."
               }
             </p>
             
-            {isDragDropEnabled && (
-              <div className="flex justify-center gap-6 text-xs text-gray-500">
+            <div className="flex justify-center gap-6 text-xs text-gray-500 flex-wrap">
+              {isDragDropEnabled && (
+                <>
+                  <div className="flex items-center gap-1">
+                    <span>📦</span>
+                    <span>Off-chain tables</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span>⛓️</span>
+                    <span>On-chain tables</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span>🎯</span>
+                    <span>Drop zones when dragging</span>
+                  </div>
+                </>
+              )}
+              {collaborativeSocket.getStatus().currentRoom && (
                 <div className="flex items-center gap-1">
-                  <span>📦</span>
-                  <span>Off-chain tables</span>
+                  <span>🤝</span>
+                  <span>Collaborative mode</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <span>⛓️</span>
-                  <span>On-chain tables</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span>🎯</span>
-                  <span>Drop zones when dragging</span>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       )}
