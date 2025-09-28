@@ -1,0 +1,153 @@
+{
+  "templateId": "defi-stellar",
+  "name": "DeFi Application Template",
+  "description": "Template for decentralized finance applications on Stellar network",
+  "ideaKeywords": ["DeFi", "defi", "tokens", "lending", "borrowing", "yield", "farm", "liquidity", "swap", "exchange", "trading", "pool", "stake", "staking", "finance", "financial"],
+  "category": "finance",
+  "difficulty": "intermediate",
+  "estimatedTime": "2-4 weeks",
+  
+  "defaultQuestions": [
+    "¿Qué tipo de activos Stellar planeas usar? 💰 (XLM, USDC, tokens personalizados)",
+    "¿Implementarás pools de liquidez? 🌊",
+    "¿Los usuarios podrán hacer staking de tokens? ⭐",
+    "¿Necesitas funciones de préstamo/borrowing? 🏦",
+    "¿Qué porcentaje de yield/rendimiento ofrecerás? 📈",
+    "¿Integraciones con otros protocolos DeFi? 🔗"
+  ],
+  
+  "recommendedModel": "hybrid",
+  "recommendedApproach": "Start with basic token operations, then add liquidity pools",
+  
+  "schemaMock": {
+    "tables": [
+      {
+        "name": "users",
+        "displayName": "DeFi Users",
+        "description": "Users participating in DeFi protocols",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "Unique user identifier", "isPrimaryKey": true},
+          {"name": "wallet_address", "type": "TEXT", "description": "Stellar wallet address", "isRequired": true},
+          {"name": "email", "type": "TEXT", "description": "User email for notifications"},
+          {"name": "total_invested", "type": "DECIMAL(18,7)", "description": "Total amount invested in protocols"},
+          {"name": "risk_tolerance", "type": "TEXT", "description": "Investment risk level", "defaultValue": "medium"},
+          {"name": "created_at", "type": "TIMESTAMP", "description": "Account creation date"},
+          {"name": "last_activity", "type": "TIMESTAMP", "description": "Last protocol interaction"}
+        ]
+      },
+      {
+        "name": "liquidity_pools",
+        "displayName": "Liquidity Pools",
+        "description": "Available liquidity pools for trading",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "Pool identifier", "isPrimaryKey": true},
+          {"name": "token_a", "type": "TEXT", "description": "First token in pair", "isRequired": true},
+          {"name": "token_b", "type": "TEXT", "description": "Second token in pair", "isRequired": true},
+          {"name": "reserve_a", "type": "DECIMAL(18,7)", "description": "Reserve amount for token A"},
+          {"name": "reserve_b", "type": "DECIMAL(18,7)", "description": "Reserve amount for token B"},
+          {"name": "total_liquidity", "type": "DECIMAL(18,7)", "description": "Total pool liquidity"},
+          {"name": "fee_rate", "type": "DECIMAL(5,4)", "description": "Trading fee percentage"},
+          {"name": "apy", "type": "DECIMAL(5,2)", "description": "Annual percentage yield"}
+        ]
+      },
+      {
+        "name": "user_positions",
+        "displayName": "User Positions",
+        "description": "User investments and positions",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "Position identifier", "isPrimaryKey": true},
+          {"name": "user_id", "type": "UUID", "description": "Reference to user", "isRequired": true},
+          {"name": "pool_id", "type": "UUID", "description": "Reference to liquidity pool"},
+          {"name": "token_symbol", "type": "TEXT", "description": "Token symbol (XLM, USDC, etc.)"},
+          {"name": "amount", "type": "DECIMAL(18,7)", "description": "Position amount"},
+          {"name": "entry_price", "type": "DECIMAL(18,7)", "description": "Entry price per token"},
+          {"name": "current_value", "type": "DECIMAL(18,7)", "description": "Current position value"},
+          {"name": "position_type", "type": "TEXT", "description": "Type: lending, staking, liquidity"},
+          {"name": "is_active", "type": "BOOLEAN", "description": "Position status", "defaultValue": true}
+        ]
+      }
+    ],
+    "relationships": [
+      {"from": "user_positions", "to": "users", "type": "many-to-one", "foreignKey": "user_id"},
+      {"from": "user_positions", "to": "liquidity_pools", "type": "many-to-one", "foreignKey": "pool_id"}
+    ]
+  },
+  
+  "stellarFeatures": [
+    "Asset Management with Stellar SDK",
+    "Path Payments for token swaps",
+    "Multi-signature for secure pools",
+    "Claimable Balances for yield distribution",
+    "Stream Payments for continuous rewards"
+  ],
+  
+  "smartContractSuggestions": [
+    "Automated Market Maker (AMM) contract",
+    "Yield farming reward distribution",
+    "Governance token voting mechanism",
+    "Emergency pause functionality",
+    "Fee collection and distribution"
+  ],
+  
+  "visualPreview": "flowchart TD\n    A[👤 User] --> B[💰 Connect Wallet]\n    B --> C[🔍 Browse Pools]\n    C --> D[🌊 Select Liquidity Pool]\n    D --> E[💸 Provide Liquidity]\n    E --> F[⭐ Earn Yield/Rewards]\n    F --> G[📊 Monitor Performance]\n    G --> H[💰 Withdraw/Compound]\n    \n    I[🏦 Lending Pool] --> J[📈 Interest Rates]\n    J --> K[🔒 Collateral Management]\n    K --> L[⚡ Instant Borrowing]\n    \n    M[🎯 Governance] --> N[🗳️ Vote on Proposals]\n    N --> O[🏛️ Protocol Updates]\n    \n    style A fill:#e1f5fe\n    style F fill:#c8e6c9\n    style I fill:#fff3e0\n    style M fill:#f3e5f5",
+  
+  "codeSnippets": {
+    "stellarConnection": "// Connect to Stellar Network\nconst StellarSdk = require('stellar-sdk');\nconst server = new StellarSdk.Server('https://horizon.stellar.org');\n\n// Load user account\nconst account = await server.loadAccount(userPublicKey);",
+    
+    "tokenSwap": "// Create path payment for token swap\nconst transaction = new StellarSdk.TransactionBuilder(account, {\n  fee: StellarSdk.BASE_FEE,\n  networkPassphrase: StellarSdk.Networks.PUBLIC,\n})\n.addOperation(StellarSdk.Operation.pathPaymentStrictSend({\n  sendAsset: sendAsset,\n  sendAmount: sendAmount,\n  destination: destinationAccount,\n  destAsset: destAsset,\n  destMin: minDestAmount,\n}))\n.setTimeout(180)\n.build();",
+    
+    "liquidityPool": "// Join liquidity pool\nconst poolAssets = [\n  new StellarSdk.LiquidityPoolAsset(assetA, assetB, 30), // 0.30% fee\n];\n\nconst poolId = StellarSdk.getLiquidityPoolId('constant_product', poolAssets[0]);"
+  },
+  
+  "recommendedLibraries": [
+    "@stellar/stellar-sdk - Core Stellar functionality",
+    "bignumber.js - Precise decimal calculations",
+    "lodash - Utility functions for data manipulation",
+    "moment - Time and date handling for yields",
+    "ws - WebSocket for real-time price updates"
+  ],
+  
+  "deploymentSteps": [
+    "1. 🔧 Set up Stellar testnet environment",
+    "2. 📝 Deploy smart contracts (if using Soroban)",
+    "3. 🌊 Initialize liquidity pools with base assets",
+    "4. 📊 Set up monitoring and analytics dashboard",
+    "5. 🚀 Launch with limited beta users",
+    "6. 📈 Monitor APY and adjust parameters",
+    "7. 🌍 Scale to mainnet with security audits"
+  ],
+  
+  "securityConsiderations": [
+    "Multi-signature requirements for large pools",
+    "Rate limiting for prevent flash loan attacks",
+    "Oracle integration for accurate price feeds",
+    "Emergency pause mechanism for critical issues",
+    "Regular security audits and bug bounties"
+  ],
+  
+  "uiElements": {
+    "dashboard": "Portfolio overview with total value, yields, and performance charts",
+    "poolBrowser": "List of available pools with APY, TVL, and risk indicators",
+    "swapInterface": "Token swap with price impact and slippage warnings",
+    "stakingPanel": "Staking rewards tracking and compound options",
+    "governanceHub": "Voting interface for protocol decisions"
+  },
+  
+  "exampleUseCases": [
+    "🌊 Liquidity Provider earning fees on XLM/USDC pair",
+    "🏦 Lending USDC to earn 8% APY with XLM collateral",
+    "⭐ Staking governance tokens for protocol rewards",
+    "🔄 Automated yield farming across multiple pools",
+    "🎯 DAO governance for protocol parameter changes"
+  ],
+  
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-09-27",
+    "compatibility": ["Stellar Mainnet", "Stellar Testnet", "Soroban"],
+    "tags": ["DeFi", "Liquidity", "Yield Farming", "Stellar", "Finance"],
+    "author": "Stellar Idea Forge",
+    "difficulty": "intermediate",
+    "estimatedDevTime": "4-6 weeks"
+  }
+}
