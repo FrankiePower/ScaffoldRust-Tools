@@ -4,11 +4,21 @@
  * Now with WebSocket support for collaborative real-time sessions
  */
 
-const express = require('express');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
-const { parseIdea, validateChatInitRequest } = require('./src/utils/ideaParser');
-const { loadTemplate } = require('./templateLoader');
+import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
+
+// import { parseIdea, validateChatInitRequest } from "./src/utils/ideaParser.js";
+// import { loadTemplate } from "./templateLoader.js";
+import authRoutes from "./src/routes/authRoutes.js";
+import chatRoutes from "./src/routes/chatRoutes.js";
+import { initializeSupabase } from "./src/supabase/supabaseClient.js";
+import dotenv from "dotenv";
+
+
+dotenv.config();
+
+
 
 // Create Express app and HTTP server
 const app = express();
@@ -28,6 +38,7 @@ const userSessions = new Map();
 // Middleware
 app.use(express.json({ limit: '10mb' })); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
 
 // Add basic CORS headers for development
 app.use((req, res, next) => {
@@ -67,48 +78,48 @@ app.post('/chat/init', (req, res) => {
         console.log('💡 Processing initial idea...');
         
         // Validate request body
-        const validation = validateChatInitRequest(req.body);
-        if (!validation.isValid) {
-            console.log('❌ Validation failed:', validation.errors);
-            return res.status(400).json({
-                error: 'Invalid request',
-                details: validation.errors,
-                message: 'Please provide a valid idea in the request body'
-            });
-        }
+        // const validation = validateChatInitRequest(req.body);
+        // if (!validation.isValid) {
+        //     console.log('❌ Validation failed:', validation.errors);
+        //     return res.status(400).json({
+        //         error: 'Invalid request',
+        //         details: validation.errors,
+        //         message: 'Please provide a valid idea in the request body'
+        //     });
+        // }
         
         const { idea } = req.body;
         console.log(`📝 Analyzing idea: "${idea.substring(0, 100)}..."`);
         
         // Parse the idea for Stellar-related keywords
-        const parsed = parseIdea(idea);
-        console.log('🔍 Parse results:', {
-            hasBlockchain: parsed.hasBlockchain,
-            keywords: parsed.keywords,
-            categories: parsed.categories,
-            confidence: parsed.confidence
-        });
+        // const parsed = parseIdea(idea);
+        // console.log('🔍 Parse results:', {
+        //     hasBlockchain: parsed.hasBlockchain,
+        //     keywords: parsed.keywords,
+        //     categories: parsed.categories,
+        //     confidence: parsed.confidence
+        // });
         
         // Prepare response
-        const response = {
-            status: 'processed',
-            summary: parsed.summary,
-            parsed: {
-                hasBlockchain: parsed.hasBlockchain,
-                keywords: parsed.keywords,
-                categories: parsed.categories,
-                confidence: parsed.confidence
-            },
-            timestamp: new Date().toISOString(),
-            next_steps: parsed.hasBlockchain ? 
-                ['Prepare clarification questions', 'Generate architecture recommendations'] :
-                ['Suggest blockchain integration opportunities', 'Explore decentralization benefits']
-        };
+        // const response = {
+        //     status: 'processed',
+        //     summary: parsed.summary,
+        //     parsed: {
+        //         hasBlockchain: parsed.hasBlockchain,
+        //         keywords: parsed.keywords,
+        //         categories: parsed.categories,
+        //         confidence: parsed.confidence
+        //     },
+        //     timestamp: new Date().toISOString(),
+        //     next_steps: parsed.hasBlockchain ? 
+        //         ['Prepare clarification questions', 'Generate architecture recommendations'] :
+        //         ['Suggest blockchain integration opportunities', 'Explore decentralization benefits']
+        // };
         
-        console.log('✅ Successfully processed idea');
-        console.log('📋 Response summary:', parsed.summary);
+        // console.log('✅ Successfully processed idea');
+        // console.log('📋 Response summary:', parsed.summary);
         
-        res.json(response);
+        // res.json(response);
         
     } catch (error) {
         console.error('💥 Error processing idea:', error);
@@ -271,40 +282,40 @@ io.on('connection', (socket) => {
         io.to(roomId).emit('message-received', message);
         
         // Handle special message types
-        if (data.type === 'idea' && data.content) {
-            // Process idea with template loader
-            setTimeout(async () => {
-                try {
-                    const templateResult = loadTemplate(data.content);
-                    if (templateResult.success) {
-                        const templateMessage = {
-                            id: `template_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                            userId: 'system',
-                            userName: 'Stellar Forge AI',
-                            content: `🎯 He encontrado un template perfecto para tu idea: **${templateResult.template.name}**`,
-                            type: 'template',
-                            timestamp: new Date().toISOString(),
-                            metadata: {
-                                template: templateResult.template,
-                                confidence: templateResult.confidence,
-                                matchedKeywords: templateResult.matchedKeywords
-                            }
-                        };
+        // if (data.type === 'idea' && data.content) {
+        //     // Process idea with template loader
+        //     setTimeout(async () => {
+        //         try {
+        //             const templateResult = loadTemplate(data.content);
+        //             if (templateResult.success) {
+        //                 const templateMessage = {
+        //                     id: `template_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        //                     userId: 'system',
+        //                     userName: 'Stellar Forge AI',
+        //                     content: `🎯 He encontrado un template perfecto para tu idea: **${templateResult.template.name}**`,
+        //                     type: 'template',
+        //                     timestamp: new Date().toISOString(),
+        //                     metadata: {
+        //                         template: templateResult.template,
+        //                         confidence: templateResult.confidence,
+        //                         matchedKeywords: templateResult.matchedKeywords
+        //                     }
+        //                 };
                         
-                        room.messageHistory.push(templateMessage);
-                        room.currentTemplate = templateResult.template;
+        //                 room.messageHistory.push(templateMessage);
+        //                 room.currentTemplate = templateResult.template;
                         
-                        io.to(roomId).emit('message-received', templateMessage);
-                        io.to(roomId).emit('template-loaded', {
-                            template: templateResult.template,
-                            confidence: templateResult.confidence
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error processing collaborative idea:', error);
-                }
-            }, 1000); // Small delay for better UX
-        }
+        //                 io.to(roomId).emit('message-received', templateMessage);
+        //                 io.to(roomId).emit('template-loaded', {
+        //                     template: templateResult.template,
+        //                     confidence: templateResult.confidence
+        //                 });
+        //             }
+        //         } catch (error) {
+        //             console.error('Error processing collaborative idea:', error);
+        //         }
+        //     }, 1000); // Small delay for better UX
+        // }
     });
     
     // Handle visual data sharing
@@ -433,6 +444,12 @@ app.post('/api/rooms/create', (req, res) => {
     res.json({ roomId, shareUrl: `${req.protocol}://${req.get('host')}?room=${roomId}` });
 });
 
+initializeSupabase()
+
+app.use("/api/auth", authRoutes);
+app.use("/api/chat", chatRoutes);
+
+
 // Start server
 server.listen(PORT, () => {
     console.log('\n🚀 Stellar Idea Forge Backend Server Started!');
@@ -462,4 +479,4 @@ process.on('SIGINT', () => {
     });
 });
 
-module.exports = app;
+export default app;

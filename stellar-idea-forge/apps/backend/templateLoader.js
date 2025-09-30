@@ -4,8 +4,9 @@
  * Provides quick starts for chat flows with structured data for visual rendering
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from "fs";
+import path from "path";
+
 
 // Cache for loaded templates to improve performance
 let templateCache = null;
