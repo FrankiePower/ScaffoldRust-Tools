@@ -1,57 +1,55 @@
-import "./App.css";
-import ChatUI from "./components/ChatUI";
-import SupabaseSchemaPreview from "./components/SupabaseSchemaPreview";
-import OpenZeppelinPreview from "./components/OpenZeppelinPreview";
-
+import "./App.css"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import ChatInit from "./components/ChatInit"
+import Dashboard from "./components/Dashboard"
+import { Toaster } from "react-hot-toast"
+import { AuthProvider } from "./contexts/AuthContext"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
-  // Mock schema data for testing
-  const mockSchemaData = [
-    {
-      name: "Users",
-      fields: ["id", "email", "name", "avatar_url", "created_at"],
-      type: "off-chain",
-      description: "Almacena perfiles de forma segura y rápida"
-    },
-    {
-      name: "Smart Contracts",
-      fields: ["id", "contract_address", "owner", "deployed_at"],
-      type: "on-chain",
-      description: "Enlaces a contratos inteligentes en blockchain"
-    },
-    {
-      name: "Posts",
-      fields: ["id", "title", "content", "user_id", "published_at"],
-      type: "off-chain",
-      description: "Rápido para consultas diarias"
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-6xl mx-auto space-y-8">
-          {/* Test SupabaseSchemaPreview Component */}
-          <div className="bg-white rounded-lg shadow-xl">
-            <SupabaseSchemaPreview schemaData={mockSchemaData} />
-          </div>
-
-          {/* OpenZeppelinPreview Component */}
-          <div className="bg-white rounded-lg shadow-xl p-6">
-            <OpenZeppelinPreview
-              type="Token"
-              flows={["Mint", "Transfer", "Burn"]}
-              security="Audited"
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: "#363636",
+                color: "#fff",
+              },
+              success: {
+                duration: 3000,
+                theme: {
+                  primary: "green",
+                  secondary: "black",
+                },
+              },
+            }}
+          />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div className="min-h-screen flex items-center justify-center  w-full">
+                  <ChatInit />
+                </div>
+              }
             />
-          </div>
-
-          {/* Main Chat UI */}
-          <ChatUI />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
         </div>
-      </div>
-    </div>
-  );
-
+      </Router>
+    </AuthProvider>
+  )
 }
 
-export default App;
+export default App

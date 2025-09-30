@@ -24,7 +24,7 @@ const ChatUI = () => {
   const [isDragDropEnabled, setIsDragDropEnabled] = useState(true);
   const [currentTemplate, setCurrentTemplate] = useState(null);
   const [sharedVisuals, setSharedVisuals] = useState(null);
-  const [collaborativeMode, setCollaborativeMode] = useState(false);
+  // const [collaborativeMode, setCollaborativeMode] = useState(false);
   
   const chatInputRef = useRef(null);
 
