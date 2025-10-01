@@ -14,7 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@supabase/supabase-js": "^2.58.0",
+
+    "@stellar/stellar-sdk": "^14.2.0",
+
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
