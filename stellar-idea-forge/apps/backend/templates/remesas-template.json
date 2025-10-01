@@ -1,0 +1,207 @@
+{
+  "templateId": "remesas-p2p",
+  "name": "Remesas P2P Template",
+  "description": "Template para aplicaciones de remesas peer-to-peer usando la red Stellar",
+  "ideaKeywords": ["remesas", "remittance", "money transfer", "envio", "dinero", "payment", "pago", "internacional", "p2p", "peer-to-peer", "cross-border", "familiar", "family"],
+  "category": "payments",
+  "difficulty": "beginner",
+  "estimatedTime": "1-2 weeks",
+  
+  "defaultQuestions": [
+    "¿Entre qué países funcionará la app de remesas? 🌎",
+    "¿Qué monedas locales necesitas soportar? 💱 (USD, EUR, MXN, etc.)",
+    "¿Los usuarios necesitarán verificación KYC? 🆔",
+    "¿Incluirás notificaciones SMS/email? 📱",
+    "¿Qué comisión cobrarás por transacción? 💰",
+    "¿Integración con bancos locales o solo wallets? 🏦",
+    "¿Los usuarios podrán programar envíos recurrentes? ⏰"
+  ],
+  
+  "recommendedModel": "hybrid",
+  "recommendedApproach": "Start simple with wallet-to-wallet transfers, then add bank integrations",
+  
+  "schemaMock": {
+    "tables": [
+      {
+        "name": "users",
+        "displayName": "Usuarios",
+        "description": "Usuarios registrados en la plataforma de remesas",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "Identificador único del usuario", "isPrimaryKey": true},
+          {"name": "email", "type": "TEXT", "description": "Email del usuario", "isRequired": true},
+          {"name": "full_name", "type": "TEXT", "description": "Nombre completo", "isRequired": true},
+          {"name": "phone_number", "type": "TEXT", "description": "Número de teléfono con código país"},
+          {"name": "wallet_address", "type": "TEXT", "description": "Dirección de wallet Stellar"},
+          {"name": "country_code", "type": "TEXT", "description": "Código del país (MX, US, etc.)", "isRequired": true},
+          {"name": "preferred_currency", "type": "TEXT", "description": "Moneda preferida (USD, MXN, EUR)", "defaultValue": "USD"},
+          {"name": "kyc_status", "type": "TEXT", "description": "Estado de verificación KYC", "defaultValue": "pending"},
+          {"name": "kyc_documents", "type": "JSONB", "description": "Documentos de verificación"},
+          {"name": "is_verified", "type": "BOOLEAN", "description": "Usuario verificado", "defaultValue": false},
+          {"name": "created_at", "type": "TIMESTAMP", "description": "Fecha de registro"},
+          {"name": "last_login", "type": "TIMESTAMP", "description": "Último inicio de sesión"}
+        ]
+      },
+      {
+        "name": "recipients",
+        "displayName": "Beneficiarios",
+        "description": "Lista de beneficiarios para envío de remesas",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "ID del beneficiario", "isPrimaryKey": true},
+          {"name": "user_id", "type": "UUID", "description": "ID del usuario emisor", "isRequired": true},
+          {"name": "full_name", "type": "TEXT", "description": "Nombre del beneficiario", "isRequired": true},
+          {"name": "relationship", "type": "TEXT", "description": "Relación (familia, amigo, etc.)"},
+          {"name": "phone_number", "type": "TEXT", "description": "Teléfono del beneficiario"},
+          {"name": "email", "type": "TEXT", "description": "Email del beneficiario"},
+          {"name": "wallet_address", "type": "TEXT", "description": "Wallet Stellar del beneficiario"},
+          {"name": "bank_account", "type": "TEXT", "description": "Cuenta bancaria (opcional)"},
+          {"name": "country_code", "type": "TEXT", "description": "País del beneficiario", "isRequired": true},
+          {"name": "preferred_method", "type": "TEXT", "description": "Método preferido: wallet, bank, cash"},
+          {"name": "is_favorite", "type": "BOOLEAN", "description": "Beneficiario favorito", "defaultValue": false},
+          {"name": "created_at", "type": "TIMESTAMP", "description": "Fecha de creación"}
+        ]
+      },
+      {
+        "name": "remittances",
+        "displayName": "Remesas",
+        "description": "Historial de transacciones de remesas",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "ID único de la remesa", "isPrimaryKey": true},
+          {"name": "sender_id", "type": "UUID", "description": "ID del remitente", "isRequired": true},
+          {"name": "recipient_id", "type": "UUID", "description": "ID del beneficiario", "isRequired": true},
+          {"name": "amount_sent", "type": "DECIMAL(18,7)", "description": "Cantidad enviada", "isRequired": true},
+          {"name": "amount_received", "type": "DECIMAL(18,7)", "description": "Cantidad recibida"},
+          {"name": "send_currency", "type": "TEXT", "description": "Moneda de envío", "isRequired": true},
+          {"name": "receive_currency", "type": "TEXT", "description": "Moneda de recepción", "isRequired": true},
+          {"name": "exchange_rate", "type": "DECIMAL(10,6)", "description": "Tasa de cambio aplicada"},
+          {"name": "fees", "type": "DECIMAL(18,7)", "description": "Comisiones cobradas"},
+          {"name": "stellar_tx_hash", "type": "TEXT", "description": "Hash de transacción Stellar"},
+          {"name": "status", "type": "TEXT", "description": "Estado: pending, processing, completed, failed", "defaultValue": "pending"},
+          {"name": "delivery_method", "type": "TEXT", "description": "Método: wallet, bank, cash_pickup"},
+          {"name": "pickup_location", "type": "TEXT", "description": "Ubicación de recogida (si aplica)"},
+          {"name": "notification_sent", "type": "BOOLEAN", "description": "Notificación enviada", "defaultValue": false},
+          {"name": "completed_at", "type": "TIMESTAMP", "description": "Fecha de completado"},
+          {"name": "created_at", "type": "TIMESTAMP", "description": "Fecha de creación"}
+        ]
+      },
+      {
+        "name": "exchange_rates",
+        "displayName": "Tasas de Cambio",
+        "description": "Historial de tasas de cambio por par de monedas",
+        "fields": [
+          {"name": "id", "type": "UUID", "description": "ID de la tasa", "isPrimaryKey": true},
+          {"name": "from_currency", "type": "TEXT", "description": "Moneda origen", "isRequired": true},
+          {"name": "to_currency", "type": "TEXT", "description": "Moneda destino", "isRequired": true},
+          {"name": "rate", "type": "DECIMAL(10,6)", "description": "Tasa de cambio", "isRequired": true},
+          {"name": "provider", "type": "TEXT", "description": "Proveedor de la tasa (CoinGecko, etc.)"},
+          {"name": "margin", "type": "DECIMAL(5,4)", "description": "Margen aplicado", "defaultValue": "0.02"},
+          {"name": "created_at", "type": "TIMESTAMP", "description": "Timestamp de la tasa"}
+        ]
+      }
+    ],
+    "relationships": [
+      {"from": "recipients", "to": "users", "type": "many-to-one", "foreignKey": "user_id"},
+      {"from": "remittances", "to": "users", "type": "many-to-one", "foreignKey": "sender_id"},
+      {"from": "remittances", "to": "recipients", "type": "many-to-one", "foreignKey": "recipient_id"}
+    ]
+  },
+  
+  "stellarFeatures": [
+    "Path Payments para conversión automática de monedas",
+    "Anchors para convertir fiat a tokens Stellar",
+    "Multi-signature para transacciones seguras",
+    "Claimable Balances para entregas diferidas",
+    "Memo fields para identificar transacciones"
+  ],
+  
+  "smartContractSuggestions": [
+    "Smart contract para escrow de transacciones",
+    "Automated compliance and AML checks",
+    "Fee distribution to partners/agents",
+    "Recurring payment automation",
+    "Multi-currency balance management"
+  ],
+  
+  "visualPreview": "flowchart TD\n    A[👤 Usuario] --> B[📱 Registrarse/Login]\n    B --> C[🆔 Verificación KYC]\n    C --> D[👥 Agregar Beneficiarios]\n    D --> E[💰 Seleccionar Monto]\n    E --> F[💱 Ver Tasa de Cambio]\n    F --> G[✅ Confirmar Envío]\n    G --> H[🌟 Transacción Stellar]\n    H --> I[📧 Notificar Beneficiario]\n    I --> J[💸 Recepción de Fondos]\n    \n    K[🏦 Integración Bancaria] --> L[🏧 Retiro ATM]\n    M[📍 Cash Pickup] --> N[🏪 Punto de Recogida]\n    O[📊 Dashboard Admin] --> P[📈 Analytics]\n    P --> Q[🔧 Configurar Tasas]\n    \n    style A fill:#e3f2fd\n    style H fill:#c8e6c9\n    style J fill:#fff3e0\n    style O fill:#f3e5f5",
+  
+  "codeSnippets": {
+    "stellarPayment": "// Crear pago con conversión automática\nconst payment = StellarSdk.Operation.pathPaymentStrictSend({\n  sendAsset: StellarSdk.Asset.native(), // XLM\n  sendAmount: sendAmount,\n  destination: recipientPublicKey,\n  destAsset: new StellarSdk.Asset('USDC', anchorPublicKey),\n  destMin: minReceiveAmount,\n  path: [intermediateAsset] // Si es necesario\n});",
+    
+    "memoTransaction": "// Agregar memo para identificar la remesa\nconst transaction = new StellarSdk.TransactionBuilder(account, {\n  fee: StellarSdk.BASE_FEE,\n  networkPassphrase: StellarSdk.Networks.PUBLIC\n})\n.addOperation(paymentOp)\n.addMemo(StellarSdk.Memo.text(`REMESA-${remittanceId}`))\n.setTimeout(180)\n.build();",
+    
+    "exchangeRate": "// Obtener tasa de cambio actual\nconst getExchangeRate = async (fromCurrency, toCurrency) => {\n  const response = await fetch(\n    `https://api.coingecko.com/api/v3/simple/price?ids=${fromCurrency}&vs_currencies=${toCurrency}`\n  );\n  const data = await response.json();\n  return data[fromCurrency][toCurrency.toLowerCase()];\n};"
+  },
+  
+  "recommendedLibraries": [
+    "@stellar/stellar-sdk - SDK principal de Stellar",
+    "twilio - Notificaciones SMS",
+    "nodemailer - Envío de emails",
+    "joi - Validación de datos",
+    "bcrypt - Hash de contraseñas",
+    "jsonwebtoken - Autenticación JWT",
+    "axios - Llamadas HTTP para tasas de cambio"
+  ],
+  
+  "deploymentSteps": [
+    "1. 🔧 Configurar entorno Stellar testnet",
+    "2. 🗃️ Configurar base de datos (PostgreSQL)",
+    "3. 🔑 Implementar sistema de autenticación",
+    "4. 📱 Integrar servicios SMS/email",
+    "5. 💱 Conectar API de tasas de cambio",
+    "6. 🧪 Pruebas con montos pequeños",
+    "7. 🆔 Implementar verificación KYC",
+    "8. 🏦 Integrar con bancos/exchanges locales",
+    "9. 🚀 Lanzamiento gradual por países"
+  ],
+  
+  "complianceConsiderations": [
+    "Registro como MSB (Money Service Business)",
+    "Implementar controles AML/KYC",
+    "Reportes de transacciones sospechosas (SAR)",
+    "Cumplimiento con regulaciones locales",
+    "Límites de transacción por usuario",
+    "Retención de registros por 5+ años"
+  ],
+  
+  "uiElements": {
+    "sendMoney": "Interfaz simple para envío con calculadora de fees",
+    "recipientBook": "Lista de beneficiarios con fotos y datos rápidos",
+    "transactionHistory": "Historial con estados y tracking en tiempo real",
+    "rateCalculator": "Calculadora transparente de tasas y comisiones",
+    "kycVerification": "Proceso guiado de verificación de identidad"
+  },
+  
+  "marketingFeatures": [
+    "💰 Comisiones más bajas que Western Union",
+    "⚡ Transferencias en segundos, no días",
+    "🔒 Seguridad blockchain de Stellar",
+    "📱 App móvil fácil de usar",
+    "🌎 Disponible 24/7 desde cualquier lugar",
+    "💱 Tasas de cambio transparentes y competitivas"
+  ],
+  
+  "exampleUseCases": [
+    "🇺🇸➡️🇲🇽 Trabajador en USA envía $200 USD a familia en México",
+    "🇪🇸➡️🇵🇪 Estudiante español envía €50 a amigo en Perú",
+    "🇦🇪➡️🇵🇭 Trabajador doméstico envía AED 500 a Filipinas",
+    "🔄 Envíos recurrentes automáticos cada mes",
+    "🏪 Recogida de efectivo en tiendas locales"
+  ],
+  
+  "revenueModel": {
+    "transactionFees": "1-3% por transacción",
+    "exchangeMargin": "0.5-1% spread en tasa de cambio",
+    "subscriptionTiers": "Plan premium para empresas",
+    "partnerCommissions": "Comisiones de agentes locales"
+  },
+  
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-09-27",
+    "compatibility": ["Stellar Mainnet", "Stellar Testnet"],
+    "tags": ["Remesas", "P2P", "Payments", "Cross-border", "Stellar"],
+    "author": "Stellar Idea Forge",
+    "difficulty": "beginner",
+    "estimatedDevTime": "2-3 weeks",
+    "targetMarkets": ["Latin America", "Asia", "Middle East", "Africa"]
+  }
+}

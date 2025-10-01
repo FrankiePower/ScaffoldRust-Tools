@@ -1,6 +1,7 @@
 import "./App.css";
 import ChatUI from "./components/ChatUI";
 import SupabaseSchemaPreview from "./components/SupabaseSchemaPreview";
+import OpenZeppelinPreview from "./components/OpenZeppelinPreview";
 
 
 function App() {
@@ -35,12 +36,22 @@ function App() {
             <SupabaseSchemaPreview schemaData={mockSchemaData} />
           </div>
 
+          {/* OpenZeppelinPreview Component */}
+          <div className="bg-white rounded-lg shadow-xl p-6">
+            <OpenZeppelinPreview
+              type="Token"
+              flows={["Mint", "Transfer", "Burn"]}
+              security="Audited"
+            />
+          </div>
+
           {/* Main Chat UI */}
           <ChatUI />
         </div>
       </div>
     </div>
   );
+
 }
 
 export default App;
