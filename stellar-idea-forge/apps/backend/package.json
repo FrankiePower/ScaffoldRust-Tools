@@ -2,11 +2,13 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:e2e": "cd ../.. && cypress run",
     "test:e2e:open": "cd ../.. && cypress open",
+    "migrate": "node src/supabase/runMigrations.js",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
@@ -19,7 +21,10 @@
 
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
-    "socket.io": "^4.8.1"
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "socket.io": "^4.8.1",
+    "stellar-sdk": "^13.3.0"
   },
   "devDependencies": {
     "cypress": "^15.3.0",
